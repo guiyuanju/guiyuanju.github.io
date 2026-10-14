@@ -7,7 +7,7 @@
         :back-text "C-x <left>"
         :home ((:section "info"
                          (:link "github" "https://github.com/guiyuanju")
-                         (:item "tools" "emacs"))
+                         (:item "tools" "emacs ai"))
                (:posts "posts")
                (:section "books"
                          (:item "The Agony of Eros" "read")
