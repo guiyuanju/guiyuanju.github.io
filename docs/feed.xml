@@ -318,28 +318,28 @@ Explanation: The next greater element for each value of nums1 is as follows:&lt;
 &lt;ul&gt;&lt;li&gt;&lt;code&gt;1 &amp;lt;= nums1.length &amp;lt;= nums2.length &amp;lt;= 1000&lt;/code&gt;&lt;/li&gt;&lt;li&gt;&lt;code&gt;0 &amp;lt;= nums1[i]&lt;/code&gt;, &lt;code&gt;nums2[i] &amp;lt;= 104&lt;/code&gt;&lt;/li&gt;&lt;li&gt;All integers in &lt;code&gt;nums1&lt;/code&gt; and &lt;code&gt;nums2&lt;/code&gt; are unique.&lt;/li&gt;&lt;li&gt;All the integers of &lt;code&gt;nums1&lt;/code&gt; also appear in &lt;code&gt;nums2&lt;/code&gt;.&lt;/li&gt;&lt;/ul&gt;
 &lt;h2&gt;Solution&lt;/h2&gt;
 &lt;p&gt;With the &lt;em&gt;monotonic stack&lt;/em&gt; technique, we could achieve O(n) time complexity.&lt;/p&gt;
-&lt;pre data-lang=&quot;go&quot;&gt;&lt;code&gt;func nextGreaterElement(nums1 []int, nums2 []int) []int {
-	greater := map[int]int{}
-	decreasing := []int{}
-	for _, n := range nums2 {
-		for len(decreasing) &amp;gt; 0 &amp;amp;&amp;amp; n &amp;gt; decreasing[len(decreasing)-1] {
-			greater[decreasing[len(decreasing)-1]] = n
-			decreasing = decreasing[:len(decreasing)-1]
+&lt;pre data-lang=&quot;go&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;nextGreaterElement&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;nums1&lt;/span&gt; []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;nums2&lt;/span&gt; []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;) []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt; {
+	&lt;span class=&quot;font-lock-variable-name&quot;&gt;greater&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;map&lt;/span&gt;[&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;]&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;{}
+	&lt;span class=&quot;font-lock-variable-name&quot;&gt;decreasing&lt;/span&gt; := []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;{}
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;_&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;n&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;range&lt;/span&gt; nums2 {
+		&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing) &amp;gt; &lt;span class=&quot;font-lock-number&quot;&gt;0&lt;/span&gt; &amp;amp;&amp;amp; n &amp;gt; decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;] {
+			greater[decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;]] = n
+			decreasing = decreasing[:&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;]
 		}
-		decreasing = append(decreasing, n)
+		decreasing = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(decreasing, n)
 	}
 
-	var res []int
-	// !!!!!!!!!!!
-	for _, n := range nums1 {
-		if v, ok := greater[n]; ok {
-			res = append(res, v)
-		} else {
-			res = append(res, -1)
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;res&lt;/span&gt; []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;
+	&lt;span class=&quot;font-lock-comment&quot;&gt;// !!!!!!!!!!!&lt;/span&gt;
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;_&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;n&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;range&lt;/span&gt; nums1 {
+		&lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;v&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;ok&lt;/span&gt; := greater[n]; ok {
+			res = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(res, v)
+		} &lt;span class=&quot;font-lock-keyword&quot;&gt;else&lt;/span&gt; {
+			res = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(res, -&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;)
 		}
 	}
 
-	return res
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; res
 }&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;But the data shows it only beats &lt;strong&gt;17%&lt;/strong&gt; solutions in terms of runtime.&lt;/p&gt;
 &lt;p&gt;What happened?&lt;/p&gt;
@@ -347,28 +347,28 @@ Explanation: The next greater element for each value of nums1 is as follows:&lt;
 &lt;code&gt;if&lt;/code&gt; statement inside a loop causes performance penalties, because of the &lt;em&gt;branch prediction failure&lt;/em&gt;,
 okay, let's eliminate the branch: instead of determin whether the number exists in the map, we loop over the stack,
 and assign &lt;code&gt;-1&lt;/code&gt; to the corresponding element in the map &lt;strong&gt;in advance&lt;/strong&gt;.&lt;/p&gt;
-&lt;pre data-lang=&quot;go&quot;&gt;&lt;code&gt;func nextGreaterElement(nums1 []int, nums2 []int) []int {
-	greater := map[int]int{}
-	decreasing := []int{}
-	for _, n := range nums2 {
-		for len(decreasing) &amp;gt; 0 &amp;amp;&amp;amp; n &amp;gt; decreasing[len(decreasing)-1] {
-			greater[decreasing[len(decreasing)-1]] = n
-			decreasing = decreasing[:len(decreasing)-1]
+&lt;pre data-lang=&quot;go&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;nextGreaterElement&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;nums1&lt;/span&gt; []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;nums2&lt;/span&gt; []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;) []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt; {
+	&lt;span class=&quot;font-lock-variable-name&quot;&gt;greater&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;map&lt;/span&gt;[&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;]&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;{}
+	&lt;span class=&quot;font-lock-variable-name&quot;&gt;decreasing&lt;/span&gt; := []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;{}
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;_&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;n&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;range&lt;/span&gt; nums2 {
+		&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing) &amp;gt; &lt;span class=&quot;font-lock-number&quot;&gt;0&lt;/span&gt; &amp;amp;&amp;amp; n &amp;gt; decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;] {
+			greater[decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;]] = n
+			decreasing = decreasing[:&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;]
 		}
-		decreasing = append(decreasing, n)
+		decreasing = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(decreasing, n)
 	}
 
-	// added here
-	for _, n := range decreasing {
-		greater[n] = -1
+	&lt;span class=&quot;font-lock-comment&quot;&gt;// added here&lt;/span&gt;
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;_&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;n&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;range&lt;/span&gt; decreasing {
+		greater[n] = -&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;
 	}
 
-	var res []int
-	for _, n := range nums1 {
-		res = append(res, greater[n])
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;res&lt;/span&gt; []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;_&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;n&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;range&lt;/span&gt; nums1 {
+		res = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(res, greater[n])
 	}
 
-	return res
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; res
 }&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Submit it again, and boom! &lt;strong&gt;100%&lt;/strong&gt; beats!&lt;/p&gt;
 &lt;p&gt;Algorithms aren't the only core of performance, but also subtle places like this, which directly related to the
@@ -501,18 +501,18 @@ structure of modern CPU.&lt;/p&gt;</content>
 Input: head = [1,2,3,4]
 Output: [2,1,4,3]&lt;/p&gt;
 &lt;p&gt;Iterative solution:&lt;/p&gt;
-&lt;pre data-lang=&quot;go&quot;&gt;&lt;code&gt;func swapPairs(head *ListNode) *ListNode {
-	if head == nil || head.Next == nil {
-		return head
+&lt;pre data-lang=&quot;go&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;swapPairs&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;head&lt;/span&gt; *&lt;span class=&quot;font-lock-type&quot;&gt;ListNode&lt;/span&gt;) *&lt;span class=&quot;font-lock-type&quot;&gt;ListNode&lt;/span&gt; {
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; head == &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt; || head.Next == &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt; {
+		&lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; head
 	}
 
-	dump := head.Next
-	var prev *ListNode
-	for head != nil &amp;amp;&amp;amp; head.Next != nil {
-		if prev != nil {
+	&lt;span class=&quot;font-lock-variable-name&quot;&gt;dump&lt;/span&gt; := head.Next
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;prev&lt;/span&gt; *&lt;span class=&quot;font-lock-type&quot;&gt;ListNode&lt;/span&gt;
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; head != &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt; &amp;amp;&amp;amp; head.Next != &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt; {
+		&lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; prev != &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt; {
 			prev.Next = head.Next
 		}
-		next := head.Next.Next
+		&lt;span class=&quot;font-lock-variable-name&quot;&gt;next&lt;/span&gt; := head.Next.Next
 		head.Next.Next = head
 		head.Next = next
 
@@ -520,19 +520,19 @@ Output: [2,1,4,3]&lt;/p&gt;
 		head = head.Next
 	}
 
-	return dump
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; dump
 }&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Recursive solution:&lt;/p&gt;
-&lt;pre data-lang=&quot;go&quot;&gt;&lt;code&gt;func swapPairs(head *ListNode) *ListNode {
-	if head == nil || head.Next == nil {
-		return head
+&lt;pre data-lang=&quot;go&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;swapPairs&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;head&lt;/span&gt; *&lt;span class=&quot;font-lock-type&quot;&gt;ListNode&lt;/span&gt;) *&lt;span class=&quot;font-lock-type&quot;&gt;ListNode&lt;/span&gt; {
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; head == &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt; || head.Next == &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt; {
+		&lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; head
 	}
 
-	dump := head.Next
-	next := head.Next.Next
+	&lt;span class=&quot;font-lock-variable-name&quot;&gt;dump&lt;/span&gt; := head.Next
+	&lt;span class=&quot;font-lock-variable-name&quot;&gt;next&lt;/span&gt; := head.Next.Next
 	head.Next.Next = head
 	head.Next = swapPairs(next)
-	return dump
+	&lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; dump
 }&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Im my opinion, the recursive solution is much more easily to come up with and understand.&lt;/p&gt;</content>
 </entry>

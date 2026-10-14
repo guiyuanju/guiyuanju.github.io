@@ -5,18 +5,18 @@
 Input: head = [1,2,3,4]
 Output: [2,1,4,3]</p>
 <p>Iterative solution:</p>
-<pre data-lang="go"><code>func swapPairs(head *ListNode) *ListNode {
-	if head == nil || head.Next == nil {
-		return head
+<pre data-lang="go"><code><span class="font-lock-keyword">func</span> <span class="font-lock-function-name">swapPairs</span>(<span class="font-lock-variable-name">head</span> *<span class="font-lock-type">ListNode</span>) *<span class="font-lock-type">ListNode</span> {
+	<span class="font-lock-keyword">if</span> head == <span class="font-lock-constant">nil</span> || head.Next == <span class="font-lock-constant">nil</span> {
+		<span class="font-lock-keyword">return</span> head
 	}
 
-	dump := head.Next
-	var prev *ListNode
-	for head != nil &amp;&amp; head.Next != nil {
-		if prev != nil {
+	<span class="font-lock-variable-name">dump</span> := head.Next
+	<span class="font-lock-keyword">var</span> <span class="font-lock-variable-name">prev</span> *<span class="font-lock-type">ListNode</span>
+	<span class="font-lock-keyword">for</span> head != <span class="font-lock-constant">nil</span> &amp;&amp; head.Next != <span class="font-lock-constant">nil</span> {
+		<span class="font-lock-keyword">if</span> prev != <span class="font-lock-constant">nil</span> {
 			prev.Next = head.Next
 		}
-		next := head.Next.Next
+		<span class="font-lock-variable-name">next</span> := head.Next.Next
 		head.Next.Next = head
 		head.Next = next
 
@@ -24,18 +24,18 @@ Output: [2,1,4,3]</p>
 		head = head.Next
 	}
 
-	return dump
+	<span class="font-lock-keyword">return</span> dump
 }</code></pre>
 <p>Recursive solution:</p>
-<pre data-lang="go"><code>func swapPairs(head *ListNode) *ListNode {
-	if head == nil || head.Next == nil {
-		return head
+<pre data-lang="go"><code><span class="font-lock-keyword">func</span> <span class="font-lock-function-name">swapPairs</span>(<span class="font-lock-variable-name">head</span> *<span class="font-lock-type">ListNode</span>) *<span class="font-lock-type">ListNode</span> {
+	<span class="font-lock-keyword">if</span> head == <span class="font-lock-constant">nil</span> || head.Next == <span class="font-lock-constant">nil</span> {
+		<span class="font-lock-keyword">return</span> head
 	}
 
-	dump := head.Next
-	next := head.Next.Next
+	<span class="font-lock-variable-name">dump</span> := head.Next
+	<span class="font-lock-variable-name">next</span> := head.Next.Next
 	head.Next.Next = head
 	head.Next = swapPairs(next)
-	return dump
+	<span class="font-lock-keyword">return</span> dump
 }</code></pre>
 <p>Im my opinion, the recursive solution is much more easily to come up with and understand.</p></article></main></body></html>
