@@ -11,6 +11,10 @@
          (:item "tools" "emacs nvim")
          (:link "github" "https://github.com/guiyuanju"))
         (:posts "posts")
+        (:section "books"
+         (:item "The Agony of Eros" "read")
+         (:item "Japan: A Modern History" "read")
+         (:item "Before You Go" "read"))
         (:section "projects"
          (:link "golisp" "https://github.com/guiyuanju/golisp")
          (:link "mossdb" "https://github.com/guiyuanju/mossdb")
