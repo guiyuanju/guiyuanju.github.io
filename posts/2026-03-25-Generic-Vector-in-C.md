@@ -1,9 +1,5 @@
----
-title: '"Generic" Vector in C From Scratch'
-date: 2026-02-02
-layout: post
-tags: [c]
----
+(:title "\"Generic\" Vector in C From Scratch"
+ :date "2026-02-02")
 
 [github repo](https://github.com/guiyuanju/vector)
 

@@ -1,9 +1,5 @@
----
-title: "SwiftUI Ignores Unused State Variables"
-date: 2025-03-28
-layout: post
-tags: [swift]
----
+(:title "SwiftUI Ignores Unused State Variables"
+ :date "2025-03-28")
 
 This issue arose from a project I was working on for the “100 Days of SwiftUI” challenge. The application allows users to select a photo from their library and assign a name to it. While it's a simple app, it presented a puzzling challenge.
 

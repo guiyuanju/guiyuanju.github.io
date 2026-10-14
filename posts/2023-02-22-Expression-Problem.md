@@ -1,8 +1,5 @@
----
-title: "Expression Problem"
-date: 2023-02-22
-layout: post
----
+(:title "Expression Problem"
+ :date "2023-02-22")
 
 OOP (Object-Oriented Programming) and FP (Functional Programming) are two prominent programming paradigms today, each offering distinct advantages and facing unique challenges. A classical example illustrating their differences is the expression problem.
 
@@ -49,6 +46,7 @@ Notably, the **observer pattern** is a design pattern that shifts a program's fo
 
 In summary, while OOP and FP each have their strengths and weaknesses regarding extensibility, various techniques can help achieve a balance, allowing for both operations and types to be extended more easily.
 
-[^1]: [The Expression Problem in Wikipedia](https://en.wikipedia.org/wiki/Expression_problem)
+**References**
 
-[^2]: [Object-Oriented Programming Versus Abstract Data Types](https://www.cs.utexas.edu/users/wcook/papers/OOPvsADT/CookOOPvsADT90.pdf)
+1. [The Expression Problem in Wikipedia](https://en.wikipedia.org/wiki/Expression_problem)
+2. [Object-Oriented Programming Versus Abstract Data Types](https://www.cs.utexas.edu/users/wcook/papers/OOPvsADT/CookOOPvsADT90.pdf)

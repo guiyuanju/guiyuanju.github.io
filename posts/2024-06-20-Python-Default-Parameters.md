@@ -1,9 +1,5 @@
----
-title: "Default Parameters in Python"
-data: 2024-06-20
-layout: post
-tags: [python]
----
+(:title "Default Parameters in Python"
+ :date "2024-06-20")
 
 Consider the following class:
 

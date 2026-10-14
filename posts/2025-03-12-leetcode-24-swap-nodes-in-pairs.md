@@ -1,9 +1,5 @@
----
-title: Swap Nodes in Pairs -- Iterative vs Recursive
-date: 2025-03-12
-layout: post
-tags: [go]
----
+(:title "Swap Nodes in Pairs -- Iterative vs Recursive"
+ :date "2025-03-12")
 
 [24. Swap Nodes in Pairs](https://leetcode.com/problems/swap-nodes-in-pairs/)
 
