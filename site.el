@@ -6,10 +6,8 @@
         :goatcounter nil
         :back-text "C-x <left>"
         :home ((:section "info"
-                         (:item "roles" "learner builder programmer")
-                         (:item "languages" "c rust go lisp")
-                         (:item "tools" "emacs nvim")
-                         (:link "github" "https://github.com/guiyuanju"))
+                         (:link "github" "https://github.com/guiyuanju")
+                         (:item "tools" "emacs"))
                (:posts "posts")
                (:section "books"
                          (:item "The Agony of Eros" "read")
