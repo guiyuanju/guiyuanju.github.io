@@ -1,12 +1,13 @@
 ;;; blog.el --- Static site generator for guiyuanju.github.io  -*- lexical-binding: t; -*-
 
-;; `blog-build' turns posts/*.md and site.lisp into docs/, which GitHub Pages
+;; `blog-build' turns posts/*.md and site.el into docs/, which GitHub Pages
 ;; serves from main; `blog-publish' builds, commits and pushes.
 
 ;;; Code:
 
 (require 'cl-lib)
 (require 'subr-x)
+(require 'url-util)
 
 (defvar blog-root (file-name-directory (or load-file-name buffer-file-name))
   "Root of the blog repository.")
@@ -37,7 +38,7 @@
   "Code block language to candidate major modes, best first.")
 
 (defvar blog--site nil
-  "Plist read from site.lisp.")
+  "Plist read from site.el.")
 
 ;;;; HTML
 
@@ -483,7 +484,7 @@ Return the index of the first line after the list."
 (defun blog-build ()
   "Generate the site into docs/, replacing it."
   (interactive)
-  (let* ((blog--site (car (blog--read-file (expand-file-name "site.lisp" blog-root))))
+  (let* ((blog--site (car (blog--read-file (expand-file-name "site.el" blog-root))))
          (posts (blog--read-posts))
          (out (expand-file-name "docs/" blog-root)))
     (when (file-directory-p out)
@@ -499,6 +500,54 @@ Return the index of the first line after the list."
                                        blog-required-pages)))
       (error "Missing pages: %s" (string-join missing ", ")))
     (message "Built %d posts into %s" (length posts) out)))
+
+;;;; Preview
+
+(defvar blog-preview-port 8000)
+
+(defconst blog--content-types
+  '(("html" . "text/html; charset=utf-8") ("css" . "text/css")
+    ("xml" . "application/atom+xml") ("png" . "image/png")
+    ("jpg" . "image/jpeg") ("svg" . "image/svg+xml")))
+
+(defun blog--preview-filter (proc request)
+  "Answer one GET REQUEST on PROC with a file from docs/."
+  (let* ((path (and (string-match "\\`GET \\([^ ?#]*\\)" request)
+                    (url-unhex-string (match-string 1 request))))
+         (docs (expand-file-name "docs/" blog-root))
+         (file (and path (expand-file-name (concat "." path) docs)))
+         (file (if (and file (file-directory-p file)) (expand-file-name "index.html" file) file)))
+    (if (and file (string-prefix-p docs file) (file-regular-p file))
+        (with-temp-buffer
+          (set-buffer-multibyte nil)
+          (insert-file-contents-literally file)
+          (process-send-string
+           proc (format "HTTP/1.0 200 OK\r\nContent-Type: %s\r\nContent-Length: %d\r\n\r\n"
+                        (or (cdr (assoc (file-name-extension file) blog--content-types))
+                            "application/octet-stream")
+                        (buffer-size)))
+          (process-send-region proc (point-min) (point-max)))
+      (process-send-string proc "HTTP/1.0 404 Not Found\r\nContent-Length: 0\r\n\r\n"))
+    (process-send-eof proc)))
+
+;;;###autoload
+(defun blog-preview ()
+  "Build the site and open it from a local server on `blog-preview-port'."
+  (interactive)
+  (blog-build)
+  (unless (process-live-p (get-process "blog-preview"))
+    (make-network-process :name "blog-preview" :server t :host 'local
+                          :service blog-preview-port :coding 'binary :noquery t
+                          :filter #'blog--preview-filter))
+  (browse-url (format "http://localhost:%d/" blog-preview-port)))
+
+;;;###autoload
+(defun blog-preview-stop ()
+  "Stop the server started by `blog-preview'."
+  (interactive)
+  (if-let* ((proc (get-process "blog-preview")))
+      (progn (delete-process proc) (message "Blog preview stopped"))
+    (message "Blog preview is not running")))
 
 ;;;###autoload
 (defun blog-publish ()
