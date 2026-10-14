@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>HashTable in Rust from Scratch</title><meta property="og:title" content="HashTable in Rust from Scratch"><meta property="og:url" content="https://guiyuanju.github.io/implementing-a-hashtable-in-rust.html"><link rel="canonical" href="https://guiyuanju.github.io/implementing-a-hashtable-in-rust.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/assets/css/main.css"></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-08-18">2025-08-18</time></p><h1>HashTable in Rust from Scratch</h1><p><a href="https://github.com/guiyuanju/hash_table_in_rust">Link for Code</a></p>
+<p>Recently, I wanted to revisit Rust, and while following along with the book <em>Crafting Interpreters</em>, I came across the chapter on implementing a Hash Table. I discovered many interesting details about Hash Table implementations, which inspired me to write this blog post. I will implement a Hash Table using Rust and conduct some possibly non-standard benchmarks.</p>
+<p>A Hash Table typically consists of two main components:</p>
+<ol><li>A hash function</li><li>A collision resolution strategy, commonly including:
+a. Chaining
+b. Linear probing</li></ol>
+<p>In our Hash Table, we will use ⁠String as the key type and a simple hash function called FNV-1a to compute the hash value. To avoid recalculating the hash value on each query, we will precompute and cache it within the key.</p>
+<pre data-lang="rust"><code><span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">struct</span> <span class="font-lock-type">KeyValue</span> {
+    <span class="font-lock-property-name">key</span>: <span class="font-lock-type">Key</span>,
+    <span class="font-lock-property-name">value</span>: <span class="font-lock-type">Value</span>,
+}
+
+<span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">struct</span> <span class="font-lock-type">Key</span> {
+    <span class="font-lock-property-name">name</span>: <span class="font-lock-type">String</span>,
+    <span class="font-lock-property-name">hash</span>: <span class="font-lock-type">u32</span>,
+}
+
+<span class="font-lock-keyword">impl</span> <span class="font-lock-type">Key</span> {
+    <span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">new</span>(<span class="font-lock-variable-name">name</span>: &amp;<span class="font-lock-type">str</span>) -&gt; <span class="font-lock-type">Self</span> {
+        <span class="font-lock-keyword">let</span> <span class="font-lock-keyword">mut</span> <span class="font-lock-variable-name">hash</span>: <span class="font-lock-type">u32</span> = <span class="font-lock-number">2166136261u32</span>;
+        <span class="font-lock-keyword">for</span> &amp;<span class="font-lock-variable-name">b</span> <span class="font-lock-keyword">in</span> name.as_bytes() {
+            <span class="font-lock-variable-name">hash</span> ^= b <span class="font-lock-keyword">as</span> <span class="font-lock-type">u32</span>;
+            <span class="font-lock-variable-name">hash</span> = hash.wrapping_mul(<span class="font-lock-number">16777619</span>);
+        }
+
+        <span class="font-lock-type">Self</span> {
+            name: name.to_string(),
+            hash,
+        }
+    }
+}
+
+<span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">enum</span> <span class="font-lock-type">Value</span> {
+    <span class="font-lock-type">Boolean</span>(<span class="font-lock-type">bool</span>),
+    <span class="font-lock-type">Number</span>(<span class="font-lock-type">f64</span>),
+    <span class="font-lock-type">String</span>(<span class="font-lock-type">String</span>),
+}</code></pre>
+<p>A Hash Table requires an array as storage space, and it must also keep track of how many entries are currently stored in the array to facilitate space expansion when it approaches capacity.</p>
+<pre data-lang="rust"><code><span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">struct</span> <span class="font-lock-type">Table</span> {
+    <span class="font-lock-keyword">pub</span> <span class="font-lock-property-name">count</span>: <span class="font-lock-type">usize</span>,
+    <span class="font-lock-property-name">entries</span>: <span class="font-lock-type">Vec</span>&lt;<span class="font-lock-type">Entry</span>&gt;,
+}
+
+<span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">enum</span> <span class="font-lock-type">Entry</span> {
+    <span class="font-lock-type">KeyValue</span>(<span class="font-lock-type">KeyValue</span>),
+    <span class="font-lock-type">Tombstone</span>,
+    <span class="font-lock-type">None</span>,
+}</code></pre>
+<p>⁠The ⁠entries array is where the actual data is stored, and each element is an ⁠enum with three possible states: the first indicates data is present, the second indicates the data has been deleted, and the third indicates no data exists. A ⁠Tombstone is a common technique used to implement the delete operation in a Hash Table. If the Hash Table uses chaining to resolve collisions, the delete operation is straightforward; you simply remove the corresponding element from the chain. However, to reduce the probability of CPU cache misses, we will use linear probing for our implementation.</p>
+<p>Unlike chaining, when a collision occurs, linear probing searches the array to find the first available space to store the element. During lookups, if the target key is not found at the desired index, it continues to search sequentially until it encounters an empty element or finds the target key.</p>
+<p>However, the delete operation in linear probing is relatively challenging to implement. Imagine if we simply remove an element, it introduces an empty slot, which could break the &quot;chain&quot; of other key lookups. A tombstone provides a solution by replacing the element to be deleted with a tombstone. When a lookup encounters a tombstone, it continues searching, thus preserving the &quot;chain.&quot; When inserting, if a tombstone is encountered, it is simply replaced, avoiding wasting space.</p>
+<p>Before implementing insert, lookup, and delete operations, we define a helper function, ⁠find_entry, which is responsible for searching for a specified key. If found, it returns the corresponding index; if not found, it returns an index where the key can be inserted. This insertable index may correspond to either an empty element or a tombstone.</p>
+<pre data-lang="rust"><code><span class="font-lock-keyword">enum</span> <span class="font-lock-type">FindResult</span> {
+    <span class="font-lock-type">Found</span>(<span class="font-lock-type">usize</span>),
+    <span class="font-lock-type">Available</span>(<span class="font-lock-type">usize</span>),
+    <span class="font-lock-type">Tombstone</span>(<span class="font-lock-type">usize</span>),
+}
+
+<span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">find_entry</span>(<span class="font-lock-variable-name">entries</span>: &amp;<span class="font-lock-type">Vec</span>&lt;<span class="font-lock-type">Entry</span>&gt;, <span class="font-lock-variable-name">key</span>: &amp;<span class="font-lock-type">Key</span>) -&gt; <span class="font-lock-type">FindResult</span> {
+    <span class="font-lock-keyword">let</span> <span class="font-lock-keyword">mut</span> <span class="font-lock-variable-name">index</span> = (key.hash % entries.len() <span class="font-lock-keyword">as</span> <span class="font-lock-type">u32</span>) <span class="font-lock-keyword">as</span> <span class="font-lock-type">usize</span>;
+    <span class="font-lock-keyword">let</span> <span class="font-lock-keyword">mut</span> <span class="font-lock-variable-name">tombstone</span>: <span class="font-lock-type">Option</span>&lt;<span class="font-lock-type">FindResult</span>&gt; = <span class="font-lock-type">None</span>;
+
+    <span class="font-lock-keyword">loop</span> {
+        <span class="font-lock-keyword">match</span> &amp;entries[index] {
+            <span class="font-lock-type">Entry</span>::<span class="font-lock-type">KeyValue</span>(<span class="font-lock-variable-name">kv</span>) =&gt; {
+                <span class="font-lock-keyword">if</span> kv.key == *key {
+                    <span class="font-lock-keyword">return</span> <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Found</span>(index);
+                }
+            }
+            <span class="font-lock-type">Entry</span>::<span class="font-lock-type">Tombstone</span> =&gt; {
+                <span class="font-lock-keyword">if</span> tombstone.is_none() {
+                    <span class="font-lock-variable-name">tombstone</span> = <span class="font-lock-type">Some</span>(<span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Tombstone</span>(index))
+                }
+            }
+            <span class="font-lock-type">Entry</span>::<span class="font-lock-type">None</span> =&gt; {
+                <span class="font-lock-keyword">if</span> tombstone.is_some() {
+                    <span class="font-lock-keyword">return</span> tombstone.unwrap();
+                }
+                <span class="font-lock-keyword">return</span> <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Available</span>(index);
+            }
+        }
+
+        <span class="font-lock-variable-name">index</span> = (index + <span class="font-lock-number">1</span>) % entries.len();
+    }
+}</code></pre>
+<p>Next, we will implement the lookup operation ⁠get. Since we already have ⁠find_entry, implementing the lookup becomes very straightforward.</p>
+<pre data-lang="rust"><code><span class="font-lock-keyword">impl</span> <span class="font-lock-type">Table</span> {
+    <span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">get</span>(&amp;<span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">key</span>: &amp;<span class="font-lock-type">Key</span>) -&gt; <span class="font-lock-type">Option</span>&lt;<span class="font-lock-type">Value</span>&gt; {
+        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">self</span>.entries.len() == <span class="font-lock-number">0</span> {
+            <span class="font-lock-keyword">return</span> <span class="font-lock-type">None</span>;
+        }
+
+        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Found</span>(<span class="font-lock-variable-name">entry_index</span>) = find_entry(&amp;<span class="font-lock-keyword">self</span>.entries, &amp;key) {
+            <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> <span class="font-lock-type">Entry</span>::<span class="font-lock-type">KeyValue</span>(<span class="font-lock-variable-name">kv</span>) = &amp;<span class="font-lock-keyword">self</span>.entries[entry_index] {
+                <span class="font-lock-keyword">return</span> <span class="font-lock-type">Some</span>(kv.value.clone());
+            }
+        }
+
+        <span class="font-lock-keyword">return</span> <span class="font-lock-type">None</span>;
+    }
+}</code></pre>
+<p>The insert operation ⁠set is a bit more complex than lookup because there might be insufficient space in the array during insertion. To optimize performance, we cannot wait until the space is nearly full to expand it. As the available space decreases, the probability of collisions increases, leading to longer lookup times. Therefore, we define a ⁠MAX_LOAD threshold, indicating when the used space reaches a certain ratio, prompting space expansion.</p>
+<p>Here, we define another helper function, ⁠adjust_capacity, to handle space expansion. Inside this function, we first allocate a larger space and then traverse the original space, inserting existing elements one by one.</p>
+<pre data-lang="rust"><code><span class="font-lock-keyword">impl</span> <span class="font-lock-type">Table</span> {
+    <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">adjust_capacity</span>(&amp;<span class="font-lock-keyword">mut</span> <span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">capacity</span>: <span class="font-lock-type">usize</span>) {
+        <span class="font-lock-keyword">let</span> <span class="font-lock-keyword">mut</span> <span class="font-lock-variable-name">entries</span>: <span class="font-lock-type">Vec</span>&lt;<span class="font-lock-type">Entry</span>&gt; = <span class="font-lock-builtin">vec</span>![<span class="font-lock-type">Entry</span>::<span class="font-lock-type">None</span>; capacity];
+
+        <span class="font-lock-keyword">self</span>.count = <span class="font-lock-number">0</span>;
+        <span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">e</span> <span class="font-lock-keyword">in</span> &amp;<span class="font-lock-keyword">self</span>.entries {
+            <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> <span class="font-lock-type">Entry</span>::<span class="font-lock-type">KeyValue</span>(<span class="font-lock-variable-name">entry</span>) = e {
+                <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Available</span>(<span class="font-lock-variable-name">index</span>) = find_entry(&amp;<span class="font-lock-keyword">mut</span> entries, &amp;entry.key) {
+                    <span class="font-lock-variable-name">entries</span>[<span class="font-lock-variable-name">index</span>] = <span class="font-lock-type">Entry</span>::<span class="font-lock-type">KeyValue</span>(entry.clone());
+                    <span class="font-lock-keyword">self</span>.count += <span class="font-lock-number">1</span>
+                }
+            }
+        }
+
+        <span class="font-lock-keyword">self</span>.entries = entries;
+    }
+}</code></pre>
+<p>With ⁠adjust_capacity implemented, we can now implement the ⁠set operation. First, we check whether inserting will exceed the load threshold. If it does, we expand the space (I arbitrarily chose a strategy: if the length is less than 8, expand it to 8 directly; otherwise, double the current length). Then, we use ⁠find_entry to determine the index where we can insert the key. If ⁠Found is returned, it means the key already exists, so we update it; if ⁠Available is returned, it means the key does not exist, and there is an empty slot available, so we increment the element count ⁠count and insert the new entry; if ⁠Tombstone is returned, we treat the tombstone as an existing element and do not increment ⁠count. This is crucial because if we do not consider the tombstone as an existing element, when the array is filled with tombstones and no empty slots remain, ⁠find_entry could enter an infinite loop.</p>
+<pre data-lang="rust"><code><span class="font-lock-keyword">impl</span> <span class="font-lock-type">Table</span> {
+    <span class="font-lock-keyword">const</span> <span class="font-lock-type">MAX_LOAD</span>: <span class="font-lock-type">f32</span> = <span class="font-lock-number">0.75</span>;
+
+    <span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">set</span>(&amp;<span class="font-lock-keyword">mut</span> <span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">key</span>: &amp;<span class="font-lock-type">Key</span>, <span class="font-lock-variable-name">value</span>: &amp;<span class="font-lock-type">Value</span>) {
+        <span class="font-lock-keyword">if</span> (<span class="font-lock-keyword">self</span>.count + <span class="font-lock-number">1</span>) <span class="font-lock-keyword">as</span> <span class="font-lock-type">f32</span> &gt; <span class="font-lock-type">Self</span>::<span class="font-lock-type">MAX_LOAD</span> * <span class="font-lock-keyword">self</span>.entries.len() <span class="font-lock-keyword">as</span> <span class="font-lock-type">f32</span> {
+            <span class="font-lock-keyword">let</span> <span class="font-lock-variable-name">capacity</span> = <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">self</span>.entries.len() &lt; <span class="font-lock-number">8</span> {
+                <span class="font-lock-number">8</span>
+            } <span class="font-lock-keyword">else</span> {
+                <span class="font-lock-keyword">self</span>.entries.len() * <span class="font-lock-number">2</span>
+            };
+
+            <span class="font-lock-keyword">self</span>.adjust_capacity(capacity);
+        }
+
+        <span class="font-lock-keyword">let</span> <span class="font-lock-variable-name">index</span> = <span class="font-lock-keyword">match</span> find_entry(&amp;<span class="font-lock-keyword">self</span>.entries, &amp;key) {
+            <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Found</span>(<span class="font-lock-variable-name">index</span>) =&gt; index,
+            <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Available</span>(<span class="font-lock-variable-name">index</span>) =&gt; {
+                <span class="font-lock-keyword">self</span>.count += <span class="font-lock-number">1</span>;
+                index
+            }
+            <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Tombstone</span>(<span class="font-lock-variable-name">index</span>) =&gt; index,
+        };
+        <span class="font-lock-keyword">self</span>.entries[<span class="font-lock-variable-name">index</span>] = <span class="font-lock-type">Entry</span>::<span class="font-lock-type">KeyValue</span>(<span class="font-lock-type">KeyValue</span> {
+            key: key.clone(),
+            value: value.clone(),
+        });
+    }
+}</code></pre>
+<p>With the tombstone mechanism in place, implementing the delete operation becomes quite simple; we just replace the corresponding element with a tombstone.</p>
+<pre data-lang="rust"><code><span class="font-lock-keyword">impl</span> <span class="font-lock-type">Table</span> {
+	<span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">delete</span>(&amp;<span class="font-lock-keyword">mut</span> <span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">key</span>: &amp;<span class="font-lock-type">Key</span>) {
+        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">self</span>.count == <span class="font-lock-number">0</span> {
+            <span class="font-lock-keyword">return</span>;
+        }
+
+        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Found</span>(<span class="font-lock-variable-name">index</span>) = find_entry(&amp;<span class="font-lock-keyword">self</span>.entries, &amp;key) {
+            <span class="font-lock-keyword">self</span>.entries[<span class="font-lock-variable-name">index</span>] = <span class="font-lock-type">Entry</span>::<span class="font-lock-type">Tombstone</span>;
+        }
+    }
+}</code></pre>
+<p>Now, we have a complete and functional Hash Table implementation. Let’s perform some benchmarks.</p>
+<p>I define an operation that involves inserting a certain number <code>⁠n</code> of elements, then deleting <code>⁠n/10</code> of those elements, and finally querying ⁠<code>n*200</code> times to calculate the average time taken for each operation.</p>
+<p>The results are as follows, where the x-axis represents the number of elements ⁠n (from 10 to 1500), and the y-axis represents the average time taken for operations at the current scale. It can be observed that the average time fluctuates in a sawtooth pattern as the scale increases. Each rising segment indicates that, under fixed storage size, the operation times increase as the number of elements stored in the Hash Table increases (indicating more collisions). When the threshold is reached, the space is expanded, and the average operation time drops accordingly.</p>
+<p><img src="/assets/images/244E2B0BC39A82FB57745536193C9312.png" alt="average op time"></p>
+<p>Additionally, I calculated the amortized operation time. Similarly, the x-axis represents the input size, but the y-axis shows the average time taken for all operations up to that point. It can be seen that the amortized time complexity of the Hash Table indeed approaches O(1).</p>
+<p><img src="/assets/images/8AF2B7052E9543A14EF8DB5B4DBAC41F.png" alt="amortized op time"></p>
+<p>Through this implementation, I gained insights into some unique details of Hash Tables, such as the peculiarities of deletion in linear probing, the pros and cons of different collision resolution algorithms, and the actual time complexity of Hash Tables.</p>
+<p>There are many more aspects to discuss regarding Hash Tables, such as comparing the performance of different hash functions, empirically comparing the performance differences of various collision solving algorithms, and exploring algorithmic performance beyond the tombstone mechanism in linear probing. These topics are left for future exploration.</p></article></main></body></html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>&quot;Generic&quot; Vector in C From Scratch</title><meta property="og:title" content="&quot;Generic&quot; Vector in C From Scratch"><meta property="og:url" content="https://guiyuanju.github.io/generic-vector-in-c.html"><link rel="canonical" href="https://guiyuanju.github.io/generic-vector-in-c.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/assets/css/main.css"></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2026-02-02">2026-02-02</time></p><h1>&quot;Generic&quot; Vector in C From Scratch</h1><p><a href="https://github.com/guiyuanju/vector">github repo</a></p>
+<p>A vector is a dynamically growable array allocated on heap, the concept is similar to <code>ArrayList</code> in Java or <code>slice</code> in Go (slice is actually a little different).</p>
+<p>C lacks such convenient data structure, but we can build one with an easy to use interface by ourselves.</p>
+<p>First define the Vec structure, a dynamic array should have a <code>len</code> indicating the actual length of data in the underlying storage, <code>cap</code> tells us the length of the storage, and <code>size</code> is quite interesting here, which represents the byte size of a single data element we store in this vector, because C doesn't have generic, and there is no type info during runtime, we need some way to know our type, so that we can retrieve the data from the bytes stored in storage using its byte size, and at last, we have the <code>data</code>, which is the underlying storage to store all our elements, in bytes.</p>
+<pre data-lang="c"><code><span class="font-lock-keyword">typedef</span> <span class="font-lock-keyword">struct</span> {
+  <span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">len</span>;
+  <span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">cap</span>;
+  <span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">size</span>;  <span class="font-lock-comment-delimiter">// </span><span class="font-lock-comment">size of an element
+</span>  <span class="font-lock-type">char</span> <span class="font-lock-variable-name">data</span>[];  <span class="font-lock-comment-delimiter">// </span><span class="font-lock-comment">flexible array member
+</span>} <span class="font-lock-type">Vec</span>;</code></pre>
+<p>The <code>data</code> is a flexible array member of this structure, it doesn't occupy any space, just a name that we can use to get the pointer to the end of our Vec structure. We have a special way to allocate the storage: we treat our Vec structure as a header, and we allocate more space than a Vec structure needs, the extra space is used for the actual storage.</p>
+<pre data-lang="c"><code><span class="font-lock-type">void</span>* <span class="font-lock-function-name">vec_new</span>(<span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">len</span>, <span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">cap</span>, <span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">size</span>) {
+  <span class="font-lock-comment-delimiter">// </span><span class="font-lock-comment">malloc the size of Vec and size * cap, that is the initial space specified
+</span>  <span class="font-lock-type">Vec</span>* <span class="font-lock-variable-name">vector</span> = (<span class="font-lock-type">Vec</span>*)malloc(offsetof(Vec, data) + size * cap);
+  vector-&gt;len = len;
+  vector-&gt;cap = cap;
+  vector-&gt;size = size;
+  <span class="font-lock-comment-delimiter">// </span><span class="font-lock-comment">return the data, instead of the Vec
+</span>  <span class="font-lock-keyword">return</span> (<span class="font-lock-type">void</span>*)(vector-&gt;data);
+}</code></pre>
+<p>Look at the <code>return (void*)(vector-&gt;data)</code>, the function is not returning a pointer to the <code>Vec</code>, but the <code>data</code> member, why do we do this? Because user now gets a real array of elements, not a custom type, which enables the familiar array index syntax like <code>data[i]</code>, without the need for a custom function like <code>vec_get(vec, idx)</code>, <code>vec_set(vec, idx, val)</code>, provides a simple interface.</p>
+<pre data-lang="c"><code><span class="font-lock-type">int</span>* <span class="font-lock-variable-name">vec</span> = vec_new(4, 4, <span class="font-lock-keyword">sizeof</span>(<span class="font-lock-type">int</span>));
+<span class="font-lock-type">vec</span>[0] = 10;</code></pre>
+<p>We could define a macro <code>vnew</code> to simplify the interface further.</p>
+<pre data-lang="c"><code><span class="font-lock-preprocessor">#define</span> <span class="font-lock-function-name">vnew</span>(<span class="font-lock-variable-name">type</span>, <span class="font-lock-variable-name">len</span>) vec_new(len, len, <span class="font-lock-keyword">sizeof</span>(type))</code></pre>
+<p>With <code>vnew</code> defined, we can use it as if we have generics in C.</p>
+<pre data-lang="c"><code><span class="font-lock-type">int</span>* <span class="font-lock-variable-name">vec</span> = vnew(<span class="font-lock-type">int</span>, 4);
+<span class="font-lock-type">vec</span>[0] = 10;</code></pre>
+<p>Okay, we have a fixed length array, how to make our vector growable? We need a function to actually do the job, below is a <code>vec_grow</code> function that takes a vector data and grow it.</p>
+<pre data-lang="c"><code><span class="font-lock-type">void</span>* <span class="font-lock-function-name">vec_grow</span>(<span class="font-lock-type">void</span>* <span class="font-lock-variable-name">vector</span>) {
+  <span class="font-lock-type">Vec</span>* <span class="font-lock-variable-name">header</span> = vheader(vector);
+  <span class="font-lock-keyword">if</span> (header-&gt;cap &gt;= 8) {
+    header-&gt;cap += header-&gt;cap / 2;
+  } <span class="font-lock-keyword">else</span> {
+    header-&gt;cap = 8;
+  }
+  header = realloc(header, offsetof(Vec, data) + header-&gt;cap * header-&gt;size);
+  <span class="font-lock-keyword">return</span> (<span class="font-lock-type">void</span>*)(header-&gt;data);
+}</code></pre>
+<p>We are using a simple grow strategy here: if the vector is less than 8, we grow to 8 directly, this is to reduce the number of expensive grow when vector size is small; and if the size is bigger than 8, grow 1.5x size. Note that we are using a macro <code>vheader</code> in the function to get the <code>Vec</code> structure back from the plain data, the definition is as below, which simply offset the pointer backwards to &quot;reveal&quot; the <strong>hidden</strong> structure.</p>
+<pre data-lang="c"><code><span class="font-lock-preprocessor">#define</span> <span class="font-lock-function-name">vheader</span>(<span class="font-lock-variable-name">vector</span>) ((<span class="font-lock-type">Vec</span>*)((<span class="font-lock-type">char</span>*)(vector) - offsetof(Vec, data)))</code></pre>
+<p>Since we have a function to grow our vector, we can automatically call it when user pushes a new element to the vector, we need a custom macro for it, which checks if the length overflow the capacity, grow the vector, set value, and update vector metadata.</p>
+<pre data-lang="c"><code><span class="font-lock-preprocessor">#define</span> <span class="font-lock-function-name">vadd</span>(<span class="font-lock-variable-name">vector</span>, <span class="font-lock-variable-name">value</span>)                         \
+  <span class="font-lock-keyword">do</span> {                                              \
+    <span class="font-lock-keyword">if</span> ((vector) == <span class="font-lock-constant">NULL</span>) {                         \
+      vector = vec_new(0, 4, <span class="font-lock-keyword">sizeof</span>(*vector));      \
+    }                                               \
+    <span class="font-lock-keyword">if</span> (vlen(vector) + 1 &gt; vcap(vector)) {          \
+      vector = vec_grow(vector);                    \
+    }                                               \
+    (vector)[vlen(vector)] = (value);               \
+    vheader(vector)-&gt;len++;                         \
+  } <span class="font-lock-keyword">while</span> (0)</code></pre>
+<p>In the <code>vadd</code> macro, there is a <code>if</code> branch which checks if vector is <code>NULL</code>, if it is, create a vector for the user, this is quite convenient, you don't need to use <code>vnew</code> now, just declare the type and <code>vadd</code>, so dynamic!</p>
+<pre data-lang="c"><code><span class="font-lock-comment-delimiter">// </span><span class="font-lock-comment">uninitialized vector
+</span><span class="font-lock-type">float</span>* <span class="font-lock-variable-name">fvec</span> = <span class="font-lock-constant">NULL</span>;
+<span class="font-lock-function-name">vadd</span>(<span class="font-lock-type">fvec</span>, 1.0);</code></pre>
+<p>There are some little helper macros here:</p>
+<pre data-lang="c"><code><span class="font-lock-preprocessor">#define</span> <span class="font-lock-function-name">vfree</span>(<span class="font-lock-variable-name">vector</span>) (free(vheader(vector)))
+<span class="font-lock-preprocessor">#define</span> <span class="font-lock-function-name">vlen</span>(<span class="font-lock-variable-name">vector</span>) (vheader(vector)-&gt;len)
+<span class="font-lock-preprocessor">#define</span> <span class="font-lock-function-name">vcap</span>(<span class="font-lock-variable-name">vector</span>) (vheader(vector)-&gt;cap)
+<span class="font-lock-preprocessor">#define</span> <span class="font-lock-function-name">vnew2</span>(<span class="font-lock-variable-name">type</span>, <span class="font-lock-variable-name">len</span>, <span class="font-lock-variable-name">cap</span>) vec_new(len, cap, <span class="font-lock-keyword">sizeof</span>(type))</code></pre>
+<p>At the end, combining all of the above, we get a easy-to-use, &quot;generic&quot; vector, which feels magical!</p>
+<pre data-lang="c"><code>   <span class="font-lock-comment-delimiter">// </span><span class="font-lock-comment">new vector with len
+</span>    <span class="font-lock-type">int</span>* <span class="font-lock-variable-name">vec</span> = vnew(<span class="font-lock-type">int</span>, 4);
+    printf(<span class="font-lock-string">&quot;len = %zu, cap = %zu\n&quot;</span>, vlen(vec), vcap(vec));
+    <span class="font-lock-keyword">for</span> (<span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">i</span> = 0; i &lt; vlen(vec); i++) {
+        vec[i] = i;
+    }
+    <span class="font-lock-keyword">for</span> (<span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">i</span> = vlen(vec); i &lt; 10; i++) {
+        vadd(vec, i);
+    }
+    <span class="font-lock-keyword">for</span> (<span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">i</span> = 0; i &lt; vlen(vec); i++) {
+        printf(<span class="font-lock-string">&quot;%d &quot;</span>, vec[i]);
+    }
+    printf(<span class="font-lock-string">&quot;\nlen = %zu, cap = %zu\n&quot;</span>, vlen(vec), vcap(vec));
+    <span class="font-lock-function-name">vfree</span>(<span class="font-lock-type">vec</span>);
+
+    <span class="font-lock-comment-delimiter">// </span><span class="font-lock-comment">uninitialized vector
+</span>    <span class="font-lock-type">float</span>* <span class="font-lock-variable-name">fvec</span> = <span class="font-lock-constant">NULL</span>;
+    <span class="font-lock-function-name">vadd</span>(<span class="font-lock-type">fvec</span>, 1.0);
+    <span class="font-lock-function-name">vadd</span>(<span class="font-lock-type">fvec</span>, 2.0);
+    <span class="font-lock-function-name">vadd</span>(<span class="font-lock-type">fvec</span>, 3.0);
+    <span class="font-lock-keyword">for</span> (<span class="font-lock-type">size_t</span> <span class="font-lock-variable-name">i</span> = 0; i &lt; vlen(fvec); i++) {
+        printf(<span class="font-lock-string">&quot;%f &quot;</span>, fvec[i]);
+    }
+    <span class="font-lock-function-name">vfree</span>(<span class="font-lock-type">fvec</span>);</code></pre></article></main></body></html>

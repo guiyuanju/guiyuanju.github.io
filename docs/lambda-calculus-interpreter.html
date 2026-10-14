@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lambda Calculus Interpreter</title><meta property="og:title" content="Lambda Calculus Interpreter"><meta property="og:url" content="https://guiyuanju.github.io/lambda-calculus-interpreter.html"><link rel="canonical" href="https://guiyuanju.github.io/lambda-calculus-interpreter.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/assets/css/main.css"></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-12-24">2025-12-24</time></p><h1>Lambda Calculus Interpreter</h1><p>A Lambda Calculus Interpreter written in Go compiled to WASM, see source on <a href="https://github.com/guiyuanju/lamb">Github</a>.</p>
+<h2>Syntax</h2>
+<p>Function/abstraction: <code>(\x.x)</code>, <code>(\x.(\y.y x))</code></p>
+<p>Application: <code>((\x.x y) y)</code> =&gt; <code>(y y)</code>.</p>
+<p>Let syntax sugar: <code>let x = y in ...</code>, replace all y with x, can be nested like <code>let a = A in let b = B in (a b)</code> =&gt; <code>(A B)</code></p>
+<h2>Examples</h2>
+<p>A function that returns its argument:</p>
+<blockquote><p>(\x.x) y</p></blockquote>
+<p>Infinite self-application function, but interpreter detected and prevent the infinite evaluation:</p>
+<blockquote><p>(\x.x x) (\x.x x)</p></blockquote>
+<p>Define number zero in Church encoding and successor function, then calculate the successor of 0:</p>
+<blockquote><p>let 0 = \f.\x.x in let succ = \n.\f.\x.f (n f x) in succ 0</p></blockquote>
+<p>Define number from 0 to 9, + - * /, if, and, or, not, and Y combinator and then calculate 6 * 7:</p>
+<blockquote><p>let succ = \n.\f.\x.f (n f x) in let pred = \n.\f.\x.n (\g.\h.h (g f)) (\u.x) (\u.u) in let 0 = \f.\x.x in let 1 = succ 0 in let 2 = succ 1 in let 3 = succ 2 in let 4 = succ 3 in let 5 = succ 4 in let 6 = succ 5 in let 7 = succ 6 in let 8 = succ 7 in let 9 = succ 8 in let + = \m.\n.\f.\x.m f (n f x) in let - = \m.\n.n pred m in let * = \m.\n.m (+ n) 0 in let pow = \b.\n.n b in let true = \x.\y.x in let false = \x.\y.y in let and = \p.\q.p q p in let or = \p.\q.p p q in let not = \p.p false true in let if = \p.\a.\b.p a b in let zero? = \n.n (\x.false) true in let &lt;= = \m.\n.zero? (- m n) in let Y = \g.(\x.g (x x)) (\x.g (x x)) in (* 6 7)</p></blockquote></article></main></body></html>

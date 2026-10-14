@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Swap Nodes in Pairs -- Iterative vs Recursive</title><meta property="og:title" content="Swap Nodes in Pairs -- Iterative vs Recursive"><meta property="og:url" content="https://guiyuanju.github.io/leetcode-24-swap-nodes-in-pairs.html"><link rel="canonical" href="https://guiyuanju.github.io/leetcode-24-swap-nodes-in-pairs.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/assets/css/main.css"></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-03-12">2025-03-12</time></p><h1>Swap Nodes in Pairs -- Iterative vs Recursive</h1><p><a href="https://leetcode.com/problems/swap-nodes-in-pairs/">24. Swap Nodes in Pairs</a></p>
+<p>Given a linked list, swap every two adjacent nodes and return its head. You must solve the problem without modifying the values in the list's nodes (i.e., only nodes themselves may be changed.)</p>
+<p>Example:
+Input: head = [1,2,3,4]
+Output: [2,1,4,3]</p>
+<p>Iterative solution:</p>
+<pre data-lang="go"><code>func swapPairs(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	dump := head.Next
+	var prev *ListNode
+	for head != nil &amp;&amp; head.Next != nil {
+		if prev != nil {
+			prev.Next = head.Next
+		}
+		next := head.Next.Next
+		head.Next.Next = head
+		head.Next = next
+
+		prev = head
+		head = head.Next
+	}
+
+	return dump
+}</code></pre>
+<p>Recursive solution:</p>
+<pre data-lang="go"><code>func swapPairs(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	dump := head.Next
+	next := head.Next.Next
+	head.Next.Next = head
+	head.Next = swapPairs(next)
+	return dump
+}</code></pre>
+<p>Im my opinion, the recursive solution is much more easily to come up with and understand.</p></article></main></body></html>

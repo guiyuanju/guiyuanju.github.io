@@ -13,6 +13,7 @@
   --blue-faint: #82b0ec;
   --cyan: #00d3d0;
   --cyan-cooler: #6ae4b9;
+  --cyan-faint: #9ac8e0;
   --magenta: #feacd0;
   --magenta-warmer: #f78fe7;
   --magenta-cooler: #b6a0ff;
@@ -137,6 +138,21 @@ th, td {
   padding: 0 1ch;
   text-align: left;
 }
+
+/* Font-lock faces in code blocks, as Modus Vivendi colors them. */
+
+.font-lock-keyword { color: var(--magenta-cooler); }
+.font-lock-builtin { color: var(--magenta-warmer); }
+.font-lock-string { color: var(--blue-warmer); }
+.font-lock-doc { color: var(--cyan-faint); }
+.font-lock-comment, .font-lock-comment-delimiter { color: var(--fg-dim); }
+.font-lock-function-name, .font-lock-function-call { color: var(--magenta); }
+.font-lock-type { color: var(--cyan-cooler); }
+.font-lock-constant { color: var(--blue-cooler); }
+.font-lock-variable-name, .font-lock-property-name,
+.font-lock-property-use { color: var(--cyan); }
+.font-lock-preprocessor { color: var(--red-cooler); }
+.font-lock-escape { color: var(--magenta); }
 
 @media (max-width: 600px) {
   .dired .target { display: none; }
