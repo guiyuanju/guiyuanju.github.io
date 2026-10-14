@@ -1,0 +1,11 @@
+/* highlight.js tokens in Modus Vivendi's code faces. */
+.hljs-keyword, .hljs-selector-tag { color: var(--magenta-cooler); }
+.hljs-built_in { color: var(--magenta-warmer); }
+.hljs-string, .hljs-regexp, .hljs-char.escape_ { color: var(--blue-warmer); }
+.hljs-comment, .hljs-quote { color: var(--fg-dim); }
+.hljs-title.function_, .hljs-title { color: var(--magenta); }
+.hljs-type, .hljs-title.class_ { color: var(--cyan-cooler); }
+.hljs-number, .hljs-literal, .hljs-symbol { color: var(--blue-cooler); }
+.hljs-variable, .hljs-attr, .hljs-property { color: var(--cyan); }
+.hljs-meta { color: var(--red-cooler); }
+.hljs-doctag { color: var(--fg-alt); }

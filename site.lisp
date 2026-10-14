@@ -6,9 +6,9 @@
  :goatcounter nil
  :back-text "C-x <left>"
  :home ((:section "info"
-         (:text "( roles learner builder programmer )")
-         (:text "( languages c rust go lisp )")
-         (:text "( tools emacs nvim )")
+         (:item "roles" "learner builder programmer")
+         (:item "languages" "c rust go lisp")
+         (:item "tools" "emacs nvim")
          (:link "github" "https://github.com/guiyuanju"))
         (:posts "posts")
         (:section "projects"

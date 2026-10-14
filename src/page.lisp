@@ -9,8 +9,8 @@
 (defun absolute-url (path)
   (concatenate 'string (string-right-trim "/" (site :url)) path))
 
-(defmacro with-page ((&key title description path buffer mode) &body body)
-  "Render one Emacs-style frame: a buffer, its mode line, and the minibuffer."
+(defmacro with-page ((&key title description path) &body body)
+  "Render a full HTML page around BODY."
   `(spinneret:with-html-string
      (:doctype)
      (:html :lang "en"
@@ -31,59 +31,69 @@
        (:link :rel "stylesheet" :href "/assets/css/main.css")
        (:link :rel "stylesheet" :href "/assets/css/hljs.css"))
       (:body
-       (:main.buffer ,@body)
-       (:footer.mode-line
-        (:span.modified "-")
-        (:span.buffer-name ,buffer)
-        (:span.position "L1")
-        (:span.vc "main")
-        (:span.mode ,mode))
-       (:div.minibuffer :id "minibuffer")
-       (:script :src "/assets/js/highlight.min.js")
-       (:script :src "/assets/js/main.js")
+       (:main ,@body)
+       (:script :type "module" :src "/assets/js/main.js")
        (let ((code (site :goatcounter)))
          (when code
            (:script :data-goatcounter
                     (format nil "https://~a.goatcounter.com/count" code)
                     :async t :src "//gc.zgo.at/count.js")))))))
 
+(defun post-url (post)
+  (format nil "/~a.html" (post-slug post)))
+
+;; The home page reads like dired: each section a subdirectory listing.
 (defun post-list (posts)
   (spinneret:with-html
-    (:ul.post-list
+    (:ul
      (dolist (post posts)
-       (:li (:time :datetime (post-date post) (post-date post))
-            " "
-            (:a :href (format nil "/~a.html" (post-slug post))
-                (post-title post)))))))
+       (:li.line (:time :datetime (post-date post) (post-date post))
+                 (:a :href (post-url post) (post-title post)))))))
 
+;; Item names are padded to one width so the values line up.
 ;; Dispatch happens outside with-html: inside it, (:section ...) and friends
 ;; would be read as tags, even as case keys.
-(defun home-entry (entry)
-  (destructuring-bind (kind label &optional url) entry
+(defun home-entry (entry width)
+  (destructuring-bind (kind label &optional value) entry
     (ecase kind
-      (:text (spinneret:with-html (:li label)))
-      (:link (spinneret:with-html (:li (:a :href url label)))))))
+      (:item (spinneret:with-html
+               (:li.line (:span.name (format nil "~va" width label))
+                         (:span.value value))))
+      (:link (spinneret:with-html
+               (:li.line (:a :href value label)
+                         (:span.target "-> " (remove-scheme value))))))))
+
+(defun remove-scheme (url)
+  (let ((start (search "://" url)))
+    (if start (subseq url (+ start 3)) url)))
 
 (defun home-section (section posts)
   (destructuring-bind (kind title &rest entries) section
     (ecase kind
       (:posts (spinneret:with-html
-                (:section (:h2 title) (post-list posts))))
-      (:section (spinneret:with-html
-                  (:section (:h2 title)
-                            (:ul (mapc #'home-entry entries))))))))
+                (:section.dired (:h2 (format nil "~~/~a:" title))
+                                (post-list posts))))
+      (:section
+       (let ((width (1+ (reduce #'max entries
+                                :key (lambda (entry)
+                                       (if (eq (first entry) :item)
+                                           (length (second entry))
+                                           0))
+                                :initial-value 0))))
+         (spinneret:with-html
+           (:section.dired (:h2 (format nil "~~/~a:" title))
+                           (:ul (dolist (entry entries)
+                                  (home-entry entry width))))))))))
 
 (defun home-page (posts)
-  (with-page (:title (site :title) :description (site :description) :path "/"
-              :buffer "~/" :mode "Dired")
+  (with-page (:title (site :title) :description (site :description) :path "/")
     (:h1 (site :title))
     (dolist (section (site :home))
       (home-section section posts))))
 
 (defun post-page (post)
   (with-page (:title (post-title post) :description (post-description post)
-              :path (format nil "/~a.html" (post-slug post))
-              :buffer (format nil "~a.md" (post-slug post)) :mode "Markdown")
+              :path (post-url post))
     (:a.back :href "/" (site :back-text))
     (:article
      (:p.post-meta (:time :datetime (post-date post) (post-date post)))

@@ -18,12 +18,13 @@
         (*package* (find-package '#:blog)))
     (read stream)))
 
-;; Emits the markup highlight.js expects: the language class sits on <code>.
+;; highlight.js reads the language class on <code>; data-lang feeds the CSS fence.
 (defmethod 3bmd-code-blocks:render-code-block
     ((renderer (eql :hljs)) stream lang params code)
   (declare (ignore params))
-  (format stream "~&<pre><code~@[ class=\"language-~a\"~]>~a</code></pre>~%"
-          (and lang (escape lang)) (escape code)))
+  (let ((lang (and lang (escape lang))))
+    (format stream "~&<pre~@[ data-lang=\"~a\"~]><code~@[ class=\"language-~a\"~]>~a</code></pre>~%"
+            lang lang (escape code))))
 
 (defun markdown->html (text)
   (let ((3bmd-code-blocks:*code-blocks* t)
