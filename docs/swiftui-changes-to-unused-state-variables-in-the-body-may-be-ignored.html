@@ -1,62 +1,221 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SwiftUI Ignores Unused State Variables</title><meta property="og:title" content="SwiftUI Ignores Unused State Variables"><meta property="og:url" content="https://guiyuanju.github.io/swiftui-changes-to-unused-state-variables-in-the-body-may-be-ignored.html"><link rel="canonical" href="https://guiyuanju.github.io/swiftui-changes-to-unused-state-variables-in-the-body-may-be-ignored.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/assets/css/main.css"></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-03-28">2025-03-28</time></p><h1>SwiftUI Ignores Unused State Variables</h1><p>This issue arose from a project I was working on for the “100 Days of SwiftUI” challenge. The application allows users to select a photo from their library and assign a name to it. While it's a simple app, it presented a puzzling challenge.</p>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SwiftUI Ignores Unused State Variables</title><meta property="og:title" content="SwiftUI Ignores Unused State Variables"><meta property="og:url" content="https://guiyuanju.github.io/swiftui-changes-to-unused-state-variables-in-the-body-may-be-ignored.html"><link rel="canonical" href="https://guiyuanju.github.io/swiftui-changes-to-unused-state-variables-in-the-body-may-be-ignored.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQAAAACFI5MzAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAB3YoTpAAAAAd0SU1FB+kLDxEQBIJn3qIAAAAoSURBVFjD7cmxCQAACMAw/39acVJ8wWQqNAJgy3bKcRzHcZzfBwBgFDd+HQ50ACyQAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDI1LTExLTE1VDE3OjE2OjA0KzAwOjAw0MxQwwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyNS0xMS0xNVQxNzoxNjowNCswMDowMKGR6H8AAAAodEVYdGRhdGU6dGltZXN0YW1wADIwMjUtMTEtMTVUMTc6MTY6MDQrMDA6MDD2hMmgAAAAAElFTkSuQmCC"><style>/* Modus Vivendi palette. */
+:root {
+  --bg-main: #000000;
+  --bg-dim: #1e1e1e;
+  --bg-inactive: #303030;
+  --bg-active: #535353;
+  --fg-main: #ffffff;
+  --fg-dim: #989898;
+  --fg-alt: #c6daff;
+  --blue: #2fafff;
+  --blue-warmer: #79a8ff;
+  --blue-cooler: #00bcff;
+  --blue-faint: #82b0ec;
+  --cyan: #00d3d0;
+  --cyan-cooler: #6ae4b9;
+  --cyan-faint: #9ac8e0;
+  --magenta: #feacd0;
+  --magenta-warmer: #f78fe7;
+  --magenta-cooler: #b6a0ff;
+  --yellow-faint: #d2b580;
+  --red-cooler: #ff7f9f;
+
+  --line: 1.5em;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 1ch var(--line);
+  background: var(--bg-main);
+  color: var(--fg-main);
+  font-family: "Sarasa Mono SC", "Sarasa Term SC", "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: var(--line);
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, figure {
+  margin: 0 0 var(--line);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+a { color: var(--blue-warmer); }
+a:visited { color: var(--magenta-cooler); }
+
+img { max-width: 100%; height: auto; }
+
+hr {
+  border: 0;
+  margin: 0 0 var(--line);
+}
+hr::before { content: "---"; color: var(--fg-dim); }
+
+/* Dired (home) */
+
+main > h1 {
+  margin: 0;
+  color: var(--fg-alt);
+}
+
+.dired { margin: 0; }
+.dired h2 {
+  margin: var(--line) 0 0;
+  color: var(--blue);
+}
+.dired ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dired .line {
+  display: flex;
+  gap: 1ch;
+  padding-left: 2ch;
+}
+.dired .name { white-space: pre; }
+.dired time, .dired .target, .dired .value { color: var(--fg-dim); flex: none; }
+.dired a { color: var(--fg-main); text-decoration: none; }
+.dired a:hover { text-decoration: underline; }
+
+/* Markdown (posts) */
+
+.back { color: var(--fg-dim); }
+
+.post-meta {
+  margin: 0;
+  color: var(--fg-dim);
+}
+
+article { max-width: 88ch; }
+
+article h1::before { content: "# "; }
+article h2::before { content: "## "; }
+article h3::before { content: "### "; }
+article h4::before { content: "#### "; }
+article h1::before, article h2::before, article h3::before,
+article h4::before { color: var(--fg-dim); }
+article h1 { color: var(--fg-main); }
+article h2 { color: var(--yellow-faint); }
+article h3 { color: var(--blue-faint); }
+article h4 { color: var(--magenta); }
+
+article ul { list-style: "- "; padding-left: 2ch; }
+article ol { padding-left: 3ch; }
+article li::marker { color: var(--fg-dim); }
+
+code { font-family: inherit; color: var(--cyan-cooler); }
+:not(pre) > code::before, :not(pre) > code::after {
+  content: "`";
+  color: var(--fg-dim);
+}
+
+pre {
+  overflow-x: auto;
+  background: var(--bg-dim);
+  padding: 0 1ch;
+}
+pre::before { content: "```" attr(data-lang); display: block; color: var(--fg-dim); }
+pre::after { content: "```"; display: block; color: var(--fg-dim); }
+pre code { color: var(--fg-main); }
+
+blockquote {
+  margin-left: 0;
+  padding-left: 1ch;
+  border-left: 1ch solid var(--bg-inactive);
+  color: var(--fg-alt);
+}
+
+table { border-collapse: collapse; }
+th, td {
+  border: 1px solid var(--bg-active);
+  padding: 0 1ch;
+  text-align: left;
+}
+
+/* Font-lock faces in code blocks, as Modus Vivendi colors them. */
+
+.font-lock-keyword { color: var(--magenta-cooler); }
+.font-lock-builtin { color: var(--magenta-warmer); }
+.font-lock-string { color: var(--blue-warmer); }
+.font-lock-doc { color: var(--cyan-faint); }
+.font-lock-comment, .font-lock-comment-delimiter { color: var(--fg-dim); }
+.font-lock-function-name, .font-lock-function-call { color: var(--magenta); }
+.font-lock-type { color: var(--cyan-cooler); }
+.font-lock-constant { color: var(--blue-cooler); }
+.font-lock-variable-name, .font-lock-property-name,
+.font-lock-property-use { color: var(--cyan); }
+.font-lock-preprocessor { color: var(--red-cooler); }
+.font-lock-escape { color: var(--magenta); }
+
+@media (max-width: 600px) {
+  .dired .target { display: none; }
+}
+</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-03-28">2025-03-28</time></p><h1>SwiftUI Ignores Unused State Variables</h1><p>This issue arose from a project I was working on for the “100 Days of SwiftUI” challenge. The application allows users to select a photo from their library and assign a name to it. While it's a simple app, it presented a puzzling challenge.</p>
 <p>Below is the initial version of the code I attempted. It failed at an unexpected point—can you identify the issue?</p>
 <pre data-lang="swift"><code><span class="font-lock-keyword">import</span> <span class="font-lock-type">SwiftUI</span>
 <span class="font-lock-keyword">import</span> <span class="font-lock-type">PhotosUI</span>
 
-<span class="font-lock-keyword">struct</span> <span class="font-lock-type">ContentView</span><span class="font-lock-delimiter">:</span> <span class="font-lock-type">View</span> <span class="font-lock-bracket">{</span>
-    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> namedPhotos<span class="font-lock-delimiter">:</span> <span class="font-lock-bracket">[</span><span class="font-lock-type">NamedPhoto</span><span class="font-lock-bracket">]</span> <span class="font-lock-operator">=</span> <span class="font-lock-bracket">[]</span>
-    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> pickerItem<span class="font-lock-delimiter">:</span> <span class="font-lock-type">PhotosPickerItem</span><span class="font-lock-operator">?</span>
-    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> currentNamedPhoto<span class="font-lock-delimiter">:</span> <span class="font-lock-type">NamedPhoto</span><span class="font-lock-operator">?</span> <span class="font-lock-operator">=</span> <span class="font-lock-constant">nil</span>
-    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> isAskNamePresented <span class="font-lock-operator">=</span> <span class="font-lock-constant">false</span>
+<span class="font-lock-keyword">struct</span> <span class="font-lock-type">ContentView</span>: <span class="font-lock-type">View</span> {
+    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> namedPhotos: [<span class="font-lock-type">NamedPhoto</span>] = []
+    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> pickerItem: <span class="font-lock-type">PhotosPickerItem</span>?
+    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> currentNamedPhoto: <span class="font-lock-type">NamedPhoto</span>? = <span class="font-lock-constant">nil</span>
+    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> isAskNamePresented = <span class="font-lock-constant">false</span>
 
-    <span class="font-lock-keyword">var</span> body<span class="font-lock-delimiter">:</span> <span class="font-lock-keyword">some</span> <span class="font-lock-type">View</span> <span class="font-lock-bracket">{</span>
-        <span class="font-lock-type">PhotosPicker</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;Select a photo&quot;</span><span class="font-lock-delimiter">,</span> selection<span class="font-lock-delimiter">:</span> $pickerItem<span class="font-lock-delimiter">,</span> matching<span class="font-lock-delimiter">:</span> <span class="font-lock-operator">.</span><span class="font-lock-property-use">images</span><span class="font-lock-bracket">)</span>
-            <span class="font-lock-operator">.</span><span class="font-lock-function-call">onChange</span><span class="font-lock-bracket">(</span><span class="font-lock-keyword">of</span><span class="font-lock-delimiter">:</span> pickerItem<span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>_<span class="font-lock-delimiter">,</span> newItem <span class="font-lock-keyword">in</span>
-                <span class="font-lock-type">Task</span> <span class="font-lock-bracket">{</span>
-                    <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> data <span class="font-lock-operator">=</span> <span class="font-lock-keyword">try</span> <span class="font-lock-keyword">await</span> newItem<span class="font-lock-operator">?.</span><span class="font-lock-function-call">loadTransferable</span><span class="font-lock-bracket">(</span>type<span class="font-lock-delimiter">:</span> <span class="font-lock-builtin">Data</span><span class="font-lock-operator">.</span><span class="font-lock-keyword">self</span><span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>
-                        currentNamedPhoto <span class="font-lock-operator">=</span> <span class="font-lock-type">NamedPhoto</span><span class="font-lock-bracket">(</span>photo<span class="font-lock-delimiter">:</span> data<span class="font-lock-delimiter">,</span> name<span class="font-lock-delimiter">:</span> <span class="font-lock-string">&quot;&quot;</span><span class="font-lock-bracket">)</span>
-                        isAskNamePresented <span class="font-lock-operator">=</span> <span class="font-lock-constant">true</span>
-                    <span class="font-lock-bracket">}</span>
-                <span class="font-lock-bracket">}</span>
-            <span class="font-lock-bracket">}</span>
-            <span class="font-lock-operator">.</span><span class="font-lock-function-call">sheet</span><span class="font-lock-bracket">(</span>isPresented<span class="font-lock-delimiter">:</span> $isAskNamePresented<span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>
-                <span class="font-lock-type">VStack</span> <span class="font-lock-bracket">{</span>
-                    <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> currentNamedPhoto <span class="font-lock-operator">=</span> <span class="font-lock-function-call">currentNamedPhoto</span> <span class="font-lock-bracket">{</span>
-                        <span class="font-lock-function-call">toImage</span><span class="font-lock-bracket">(</span>from<span class="font-lock-delimiter">:</span> currentNamedPhoto<span class="font-lock-operator">.</span><span class="font-lock-property-use">photo</span><span class="font-lock-bracket">)</span>
-                            <span class="font-lock-operator">.</span><span class="font-lock-function-call">resizable</span><span class="font-lock-bracket">()</span>
-                            <span class="font-lock-operator">.</span><span class="font-lock-function-call">scaledToFit</span><span class="font-lock-bracket">()</span>
-                            <span class="font-lock-operator">.</span><span class="font-lock-function-call">frame</span><span class="font-lock-bracket">(</span>height<span class="font-lock-delimiter">:</span> <span class="font-lock-number">300</span><span class="font-lock-bracket">)</span>
-                        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> namedPhoto <span class="font-lock-operator">=</span> <span class="font-lock-type">Binding</span><span class="font-lock-bracket">(</span>$currentNamedPhoto<span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>
-                            <span class="font-lock-type">TextField</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;Name&quot;</span><span class="font-lock-delimiter">,</span> text<span class="font-lock-delimiter">:</span> namedPhoto<span class="font-lock-operator">.</span><span class="font-lock-builtin">name</span><span class="font-lock-bracket">)</span>
-                        <span class="font-lock-bracket">}</span>
-                        <span class="font-lock-type">Button</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;Add&quot;</span><span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>
-                            namedPhotos<span class="font-lock-operator">.</span><span class="font-lock-builtin">append</span><span class="font-lock-bracket">(</span>currentNamedPhoto<span class="font-lock-bracket">)</span>
-                            isAskNamePresented <span class="font-lock-operator">=</span> <span class="font-lock-constant">false</span>
-                        <span class="font-lock-bracket">}</span>
-                    <span class="font-lock-bracket">}</span> <span class="font-lock-keyword">else</span> <span class="font-lock-bracket">{</span>
-                        <span class="font-lock-type">Text</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;No photo selected&quot;</span><span class="font-lock-bracket">)</span>
-                    <span class="font-lock-bracket">}</span>
-                <span class="font-lock-bracket">}</span>
-            <span class="font-lock-bracket">}</span>
+    <span class="font-lock-keyword">var</span> body: <span class="font-lock-keyword">some</span> <span class="font-lock-type">View</span> {
+        <span class="font-lock-type">PhotosPicker</span>(<span class="font-lock-string">&quot;Select a photo&quot;</span>, selection: $pickerItem, matching: .<span class="font-lock-property-use">images</span>)
+            .<span class="font-lock-function-call">onChange</span>(<span class="font-lock-keyword">of</span>: pickerItem) {_, newItem <span class="font-lock-keyword">in</span>
+                <span class="font-lock-type">Task</span> {
+                    <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> data = <span class="font-lock-keyword">try</span> <span class="font-lock-keyword">await</span> newItem?.<span class="font-lock-function-call">loadTransferable</span>(type: <span class="font-lock-builtin">Data</span>.<span class="font-lock-keyword">self</span>) {
+                        currentNamedPhoto = <span class="font-lock-type">NamedPhoto</span>(photo: data, name: <span class="font-lock-string">&quot;&quot;</span>)
+                        isAskNamePresented = <span class="font-lock-constant">true</span>
+                    }
+                }
+            }
+            .<span class="font-lock-function-call">sheet</span>(isPresented: $isAskNamePresented) {
+                <span class="font-lock-type">VStack</span> {
+                    <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> currentNamedPhoto = <span class="font-lock-function-call">currentNamedPhoto</span> {
+                        <span class="font-lock-function-call">toImage</span>(from: currentNamedPhoto.<span class="font-lock-property-use">photo</span>)
+                            .<span class="font-lock-function-call">resizable</span>()
+                            .<span class="font-lock-function-call">scaledToFit</span>()
+                            .<span class="font-lock-function-call">frame</span>(height: 300)
+                        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> namedPhoto = <span class="font-lock-type">Binding</span>($currentNamedPhoto) {
+                            <span class="font-lock-type">TextField</span>(<span class="font-lock-string">&quot;Name&quot;</span>, text: namedPhoto.<span class="font-lock-builtin">name</span>)
+                        }
+                        <span class="font-lock-type">Button</span>(<span class="font-lock-string">&quot;Add&quot;</span>) {
+                            namedPhotos.<span class="font-lock-builtin">append</span>(currentNamedPhoto)
+                            isAskNamePresented = <span class="font-lock-constant">false</span>
+                        }
+                    } <span class="font-lock-keyword">else</span> {
+                        <span class="font-lock-type">Text</span>(<span class="font-lock-string">&quot;No photo selected&quot;</span>)
+                    }
+                }
+            }
 
-        <span class="font-lock-type">List</span><span class="font-lock-bracket">(</span>namedPhotos<span class="font-lock-delimiter">,</span> id<span class="font-lock-delimiter">:</span> \<span class="font-lock-operator">.</span><span class="font-lock-property-use">id</span><span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span> photo <span class="font-lock-keyword">in</span>
-            <span class="font-lock-type">VStack</span><span class="font-lock-bracket">(</span>alignment<span class="font-lock-delimiter">:</span> <span class="font-lock-operator">.</span><span class="font-lock-property-use">leading</span><span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>
-                <span class="font-lock-type">Text</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;hi&quot;</span><span class="font-lock-bracket">)</span>
-                <span class="font-lock-function-call">toImage</span><span class="font-lock-bracket">(</span>from<span class="font-lock-delimiter">:</span> photo<span class="font-lock-operator">.</span><span class="font-lock-property-use">photo</span><span class="font-lock-bracket">)</span>
-                    <span class="font-lock-operator">.</span><span class="font-lock-function-call">resizable</span><span class="font-lock-bracket">()</span>
-                    <span class="font-lock-operator">.</span><span class="font-lock-function-call">scaledToFit</span><span class="font-lock-bracket">()</span>
-            <span class="font-lock-bracket">}</span>
-        <span class="font-lock-bracket">}</span>
-    <span class="font-lock-bracket">}</span>
+        <span class="font-lock-type">List</span>(namedPhotos, id: \.<span class="font-lock-property-use">id</span>) { photo <span class="font-lock-keyword">in</span>
+            <span class="font-lock-type">VStack</span>(alignment: .<span class="font-lock-property-use">leading</span>) {
+                <span class="font-lock-type">Text</span>(<span class="font-lock-string">&quot;hi&quot;</span>)
+                <span class="font-lock-function-call">toImage</span>(from: photo.<span class="font-lock-property-use">photo</span>)
+                    .<span class="font-lock-function-call">resizable</span>()
+                    .<span class="font-lock-function-call">scaledToFit</span>()
+            }
+        }
+    }
 
-    <span class="font-lock-keyword">func</span> <span class="font-lock-function-name">toImage</span><span class="font-lock-bracket">(</span>from data<span class="font-lock-delimiter">:</span> <span class="font-lock-builtin">Data</span><span class="font-lock-bracket">)</span> <span class="font-lock-operator">-&gt;</span> <span class="font-lock-type">Image</span> <span class="font-lock-bracket">{</span>
-        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> uiImage <span class="font-lock-operator">=</span> <span class="font-lock-type">UIImage</span><span class="font-lock-bracket">(</span>data<span class="font-lock-delimiter">:</span> data<span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>
-            <span class="font-lock-keyword">return</span> <span class="font-lock-type">Image</span><span class="font-lock-bracket">(</span>uiImage<span class="font-lock-delimiter">:</span> uiImage<span class="font-lock-bracket">)</span>
-        <span class="font-lock-bracket">}</span>
-        <span class="font-lock-builtin">fatalError</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;Couldn't convert data to UIImage&quot;</span><span class="font-lock-bracket">)</span>
-    <span class="font-lock-bracket">}</span>
-<span class="font-lock-bracket">}</span></code></pre>
+    <span class="font-lock-keyword">func</span> <span class="font-lock-function-name">toImage</span>(from data: <span class="font-lock-builtin">Data</span>) -&gt; <span class="font-lock-type">Image</span> {
+        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> uiImage = <span class="font-lock-type">UIImage</span>(data: data) {
+            <span class="font-lock-keyword">return</span> <span class="font-lock-type">Image</span>(uiImage: uiImage)
+        }
+        <span class="font-lock-builtin">fatalError</span>(<span class="font-lock-string">&quot;Couldn't convert data to UIImage&quot;</span>)
+    }
+}</code></pre>
 <p>To briefly explain the code: the ⁠PhotosPicker allows users to select a photo from their library. Once the photo data is loaded, the sheet is triggered by updating the variable. This is the key functionality.</p>
 <p>However, the first time I selected a photo, the sheet was presented, but its content displayed “No photo selected.” This was unexpected!</p>
 <p>The ⁠isAskNamePresented variable is set after we assign the photo data to ⁠currentNamedPhoto, so the sheet should recognize that ⁠currentNamedPhoto is no longer nil.</p>
@@ -64,38 +223,38 @@
 <p>Next, I considered whether the closure might be related to the issue, as the variable captured within the closure has value semantics. This means the value does not change, but I soon realized this assumption was incorrect.</p>
 <p>After conducting some research, I found an explanation on StackOverflow: <a href="https://stackoverflow.com/questions/66262213/swiftui-sheet-unexpectedly-found-nil-while-unwrapping-an-optional-value/66267507#66267507">link</a>. It states that changes are ignored because the variable is not directly used within the ⁠body property, leading SwiftUI to optimize it out.</p>
 <p>To resolve this, I updated the code by adding one line:</p>
-<pre data-lang="swift"><code><span class="font-lock-keyword">var</span> body<span class="font-lock-delimiter">:</span> <span class="font-lock-keyword">some</span> <span class="font-lock-type">View</span> <span class="font-lock-bracket">{</span>
-        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> currentNamedPhoto <span class="font-lock-operator">=</span> <span class="font-lock-function-call">currentNamedPhoto</span> <span class="font-lock-bracket">{}</span>
+<pre data-lang="swift"><code><span class="font-lock-keyword">var</span> body: <span class="font-lock-keyword">some</span> <span class="font-lock-type">View</span> {
+        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> currentNamedPhoto = <span class="font-lock-function-call">currentNamedPhoto</span> {}
 
-        <span class="font-lock-type">PhotosPicker</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;Select a photo&quot;</span><span class="font-lock-delimiter">,</span> selection<span class="font-lock-delimiter">:</span> $pickerItem<span class="font-lock-delimiter">,</span> matching<span class="font-lock-delimiter">:</span> <span class="font-lock-operator">.</span><span class="font-lock-property-use">images</span><span class="font-lock-bracket">)</span>
+        <span class="font-lock-type">PhotosPicker</span>(<span class="font-lock-string">&quot;Select a photo&quot;</span>, selection: $pickerItem, matching: .<span class="font-lock-property-use">images</span>)
 <span class="font-lock-comment-delimiter">//</span><span class="font-lock-comment"> ...</span></code></pre>
 <p>Now, everything works as intended!</p>
 <p>Alternatively, we can use another initializer for the sheet: <a href="https://developer.apple.com/documentation/swiftui/view/sheet(item:ondismiss:content:)">link</a></p>
-<pre data-lang="swift"><code><span class="font-lock-keyword">struct</span> <span class="font-lock-type">ContentView</span><span class="font-lock-delimiter">:</span> <span class="font-lock-type">View</span> <span class="font-lock-bracket">{</span>
-    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> namedPhotos<span class="font-lock-delimiter">:</span> <span class="font-lock-bracket">[</span><span class="font-lock-type">NamedPhoto</span><span class="font-lock-bracket">]</span> <span class="font-lock-operator">=</span> <span class="font-lock-bracket">[]</span>
-    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> pickerItem<span class="font-lock-delimiter">:</span> <span class="font-lock-type">PhotosPickerItem</span><span class="font-lock-operator">?</span>
-    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> currentNamedPhoto<span class="font-lock-delimiter">:</span> <span class="font-lock-type">NamedPhoto</span><span class="font-lock-operator">?</span> <span class="font-lock-operator">=</span> <span class="font-lock-constant">nil</span>
+<pre data-lang="swift"><code><span class="font-lock-keyword">struct</span> <span class="font-lock-type">ContentView</span>: <span class="font-lock-type">View</span> {
+    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> namedPhotos: [<span class="font-lock-type">NamedPhoto</span>] = []
+    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> pickerItem: <span class="font-lock-type">PhotosPickerItem</span>?
+    <span class="font-lock-keyword">@State</span> <span class="font-lock-keyword">private</span> <span class="font-lock-keyword">var</span> currentNamedPhoto: <span class="font-lock-type">NamedPhoto</span>? = <span class="font-lock-constant">nil</span>
 
-    <span class="font-lock-keyword">var</span> body<span class="font-lock-delimiter">:</span> <span class="font-lock-keyword">some</span> <span class="font-lock-type">View</span> <span class="font-lock-bracket">{</span>
-        <span class="font-lock-type">PhotosPicker</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;Select a photo&quot;</span><span class="font-lock-delimiter">,</span> selection<span class="font-lock-delimiter">:</span> $pickerItem<span class="font-lock-delimiter">,</span> matching<span class="font-lock-delimiter">:</span> <span class="font-lock-operator">.</span><span class="font-lock-property-use">images</span><span class="font-lock-bracket">)</span>
-            <span class="font-lock-operator">.</span><span class="font-lock-function-call">onChange</span><span class="font-lock-bracket">(</span><span class="font-lock-keyword">of</span><span class="font-lock-delimiter">:</span> pickerItem<span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>_<span class="font-lock-delimiter">,</span> newItem <span class="font-lock-keyword">in</span>
-                <span class="font-lock-type">Task</span> <span class="font-lock-bracket">{</span>
-                    <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> data <span class="font-lock-operator">=</span> <span class="font-lock-keyword">try</span> <span class="font-lock-keyword">await</span> newItem<span class="font-lock-operator">?.</span><span class="font-lock-function-call">loadTransferable</span><span class="font-lock-bracket">(</span>type<span class="font-lock-delimiter">:</span> <span class="font-lock-builtin">Data</span><span class="font-lock-operator">.</span><span class="font-lock-keyword">self</span><span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>
-                        currentNamedPhoto <span class="font-lock-operator">=</span> <span class="font-lock-type">NamedPhoto</span><span class="font-lock-bracket">(</span>photo<span class="font-lock-delimiter">:</span> data<span class="font-lock-delimiter">,</span> name<span class="font-lock-delimiter">:</span> <span class="font-lock-string">&quot;&quot;</span><span class="font-lock-bracket">)</span>
-                    <span class="font-lock-bracket">}</span>
-                <span class="font-lock-bracket">}</span>
-            <span class="font-lock-bracket">}</span>
-            <span class="font-lock-operator">.</span><span class="font-lock-function-call">sheet</span><span class="font-lock-bracket">(</span>item<span class="font-lock-delimiter">:</span> $currentNamedPhoto<span class="font-lock-delimiter">,</span> onDismiss<span class="font-lock-delimiter">:</span> <span class="font-lock-bracket">{</span> <span class="font-lock-bracket">})</span> <span class="font-lock-bracket">{</span> item <span class="font-lock-keyword">in</span>
-                <span class="font-lock-keyword">var</span> newItem <span class="font-lock-operator">=</span> <span class="font-lock-type">NamedPhoto</span><span class="font-lock-bracket">(</span>photo<span class="font-lock-delimiter">:</span> item<span class="font-lock-operator">.</span><span class="font-lock-property-use">photo</span><span class="font-lock-delimiter">,</span> name<span class="font-lock-delimiter">:</span> <span class="font-lock-string">&quot;&quot;</span><span class="font-lock-bracket">)</span>
-                <span class="font-lock-function-call">toImage</span><span class="font-lock-bracket">(</span>from<span class="font-lock-delimiter">:</span> newItem<span class="font-lock-operator">.</span><span class="font-lock-property-use">photo</span><span class="font-lock-bracket">)</span>
-                    <span class="font-lock-operator">.</span><span class="font-lock-function-call">resizable</span><span class="font-lock-bracket">()</span>
-                    <span class="font-lock-operator">.</span><span class="font-lock-function-call">scaledToFit</span><span class="font-lock-bracket">()</span>
-                    <span class="font-lock-operator">.</span><span class="font-lock-function-call">frame</span><span class="font-lock-bracket">(</span>height<span class="font-lock-delimiter">:</span> <span class="font-lock-number">300</span><span class="font-lock-bracket">)</span>
-                <span class="font-lock-type">TextField</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;Name&quot;</span><span class="font-lock-delimiter">,</span> text<span class="font-lock-delimiter">:</span> <span class="font-lock-type">Binding</span><span class="font-lock-bracket">(</span><span class="font-lock-keyword">get</span><span class="font-lock-delimiter">:</span> <span class="font-lock-bracket">{</span> newItem<span class="font-lock-operator">.</span><span class="font-lock-builtin">name</span> <span class="font-lock-bracket">}</span><span class="font-lock-delimiter">,</span> <span class="font-lock-keyword">set</span><span class="font-lock-delimiter">:</span> <span class="font-lock-bracket">{</span> newItem<span class="font-lock-operator">.</span><span class="font-lock-builtin">name</span> <span class="font-lock-operator">=</span> $0 <span class="font-lock-bracket">}))</span>
-                <span class="font-lock-type">Button</span><span class="font-lock-bracket">(</span><span class="font-lock-string">&quot;Add&quot;</span><span class="font-lock-bracket">)</span> <span class="font-lock-bracket">{</span>
-                    namedPhotos<span class="font-lock-operator">.</span><span class="font-lock-builtin">append</span><span class="font-lock-bracket">(</span>newItem<span class="font-lock-bracket">)</span>
-                    currentNamedPhoto <span class="font-lock-operator">=</span> <span class="font-lock-constant">nil</span>
-                <span class="font-lock-bracket">}</span>
-            <span class="font-lock-bracket">}</span>
+    <span class="font-lock-keyword">var</span> body: <span class="font-lock-keyword">some</span> <span class="font-lock-type">View</span> {
+        <span class="font-lock-type">PhotosPicker</span>(<span class="font-lock-string">&quot;Select a photo&quot;</span>, selection: $pickerItem, matching: .<span class="font-lock-property-use">images</span>)
+            .<span class="font-lock-function-call">onChange</span>(<span class="font-lock-keyword">of</span>: pickerItem) {_, newItem <span class="font-lock-keyword">in</span>
+                <span class="font-lock-type">Task</span> {
+                    <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> data = <span class="font-lock-keyword">try</span> <span class="font-lock-keyword">await</span> newItem?.<span class="font-lock-function-call">loadTransferable</span>(type: <span class="font-lock-builtin">Data</span>.<span class="font-lock-keyword">self</span>) {
+                        currentNamedPhoto = <span class="font-lock-type">NamedPhoto</span>(photo: data, name: <span class="font-lock-string">&quot;&quot;</span>)
+                    }
+                }
+            }
+            .<span class="font-lock-function-call">sheet</span>(item: $currentNamedPhoto, onDismiss: { }) { item <span class="font-lock-keyword">in</span>
+                <span class="font-lock-keyword">var</span> newItem = <span class="font-lock-type">NamedPhoto</span>(photo: item.<span class="font-lock-property-use">photo</span>, name: <span class="font-lock-string">&quot;&quot;</span>)
+                <span class="font-lock-function-call">toImage</span>(from: newItem.<span class="font-lock-property-use">photo</span>)
+                    .<span class="font-lock-function-call">resizable</span>()
+                    .<span class="font-lock-function-call">scaledToFit</span>()
+                    .<span class="font-lock-function-call">frame</span>(height: 300)
+                <span class="font-lock-type">TextField</span>(<span class="font-lock-string">&quot;Name&quot;</span>, text: <span class="font-lock-type">Binding</span>(<span class="font-lock-keyword">get</span>: { newItem.<span class="font-lock-builtin">name</span> }, <span class="font-lock-keyword">set</span>: { newItem.<span class="font-lock-builtin">name</span> = $0 }))
+                <span class="font-lock-type">Button</span>(<span class="font-lock-string">&quot;Add&quot;</span>) {
+                    namedPhotos.<span class="font-lock-builtin">append</span>(newItem)
+                    currentNamedPhoto = <span class="font-lock-constant">nil</span>
+                }
+            }
 <span class="font-lock-comment-delimiter">//</span><span class="font-lock-comment"> ...</span></code></pre>
 <p>This approach also works effectively.</p></article></main></body></html>

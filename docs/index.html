@@ -1,2 +1,161 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>M-x k</title><meta property="og:title" content="M-x k"><meta property="og:url" content="https://guiyuanju.github.io/"><link rel="canonical" href="https://guiyuanju.github.io/"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/assets/css/main.css"></head><body><main><h1>M-x k</h1><section class="dired"><h2>~/info:</h2><ul><li class="line"><a href="https://github.com/guiyuanju">github</a><span class="target">-&gt; github.com/guiyuanju</span></li><li class="line"><span class="name">tools </span><span class="value">emacs ai</span></li></ul></section><section class="dired"><h2>~/posts:</h2><ul><li class="line"><time datetime="2026-02-02">2026-02-02</time><a href="/generic-vector-in-c.html">&quot;Generic&quot; Vector in C From Scratch</a></li><li class="line"><time datetime="2025-12-24">2025-12-24</time><a href="/lambda-calculus-interpreter.html">Lambda Calculus Interpreter</a></li><li class="line"><time datetime="2025-08-18">2025-08-18</time><a href="/implementing-a-hashtable-in-rust.html">HashTable in Rust from Scratch</a></li><li class="line"><time datetime="2025-05-20">2025-05-20</time><a href="/leetcode-496-next-greater-element-i.html">Improve Performance Greatly By Eliminating Branches</a></li><li class="line"><time datetime="2025-04-29">2025-04-29</time><a href="/crafting-interpreters.html">Book Reading: Crafting Interpreters</a></li><li class="line"><time datetime="2025-03-28">2025-03-28</time><a href="/swiftui-changes-to-unused-state-variables-in-the-body-may-be-ignored.html">SwiftUI Ignores Unused State Variables</a></li><li class="line"><time datetime="2025-03-12">2025-03-12</time><a href="/leetcode-24-swap-nodes-in-pairs.html">Swap Nodes in Pairs -- Iterative vs Recursive</a></li><li class="line"><time datetime="2024-06-20">2024-06-20</time><a href="/python-default-parameters.html">Default Parameters in Python</a></li><li class="line"><time datetime="2023-02-22">2023-02-22</time><a href="/expression-problem.html">Expression Problem</a></li></ul></section><section class="dired"><h2>~/books:</h2><ul><li class="line"><span class="name">A Pale View of Hills    </span><span class="value">read</span></li><li class="line"><span class="name">The Agony of Eros       </span><span class="value">read</span></li><li class="line"><span class="name">Japan: A Modern History </span><span class="value">read</span></li><li class="line"><span class="name">Never Let Me Go         </span><span class="value">read</span></li></ul></section><section class="dired"><h2>~/projects:</h2><ul><li class="line"><a href="https://github.com/guiyuanju/golisp">golisp</a><span class="target">-&gt; github.com/guiyuanju/golisp</span></li><li class="line"><a href="https://github.com/guiyuanju/mossdb">mossdb</a><span class="target">-&gt; github.com/guiyuanju/mossdb</span></li><li class="line"><a href="https://github.com/guiyuanju/lamb">lamb</a><span class="target">-&gt; github.com/guiyuanju/lamb</span></li><li class="line"><a href="https://github.com/guiyuanju/nn">nn</a><span class="target">-&gt; github.com/guiyuanju/nn</span></li><li class="line"><a href="https://github.com/guiyuanju/painting">painting</a><span class="target">-&gt; github.com/guiyuanju/painting</span></li><li class="line"><a href="https://github.com/guiyuanju/blockmepls">blockmepls</a><span class="target">-&gt; github.com/guiyuanju/blockmepls</span></li></ul></section></main></body></html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>M-x k</title><meta property="og:title" content="M-x k"><meta property="og:url" content="https://guiyuanju.github.io/"><link rel="canonical" href="https://guiyuanju.github.io/"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQAAAACFI5MzAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAB3YoTpAAAAAd0SU1FB+kLDxEQBIJn3qIAAAAoSURBVFjD7cmxCQAACMAw/39acVJ8wWQqNAJgy3bKcRzHcZzfBwBgFDd+HQ50ACyQAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDI1LTExLTE1VDE3OjE2OjA0KzAwOjAw0MxQwwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyNS0xMS0xNVQxNzoxNjowNCswMDowMKGR6H8AAAAodEVYdGRhdGU6dGltZXN0YW1wADIwMjUtMTEtMTVUMTc6MTY6MDQrMDA6MDD2hMmgAAAAAElFTkSuQmCC"><style>/* Modus Vivendi palette. */
+:root {
+  --bg-main: #000000;
+  --bg-dim: #1e1e1e;
+  --bg-inactive: #303030;
+  --bg-active: #535353;
+  --fg-main: #ffffff;
+  --fg-dim: #989898;
+  --fg-alt: #c6daff;
+  --blue: #2fafff;
+  --blue-warmer: #79a8ff;
+  --blue-cooler: #00bcff;
+  --blue-faint: #82b0ec;
+  --cyan: #00d3d0;
+  --cyan-cooler: #6ae4b9;
+  --cyan-faint: #9ac8e0;
+  --magenta: #feacd0;
+  --magenta-warmer: #f78fe7;
+  --magenta-cooler: #b6a0ff;
+  --yellow-faint: #d2b580;
+  --red-cooler: #ff7f9f;
+
+  --line: 1.5em;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 1ch var(--line);
+  background: var(--bg-main);
+  color: var(--fg-main);
+  font-family: "Sarasa Mono SC", "Sarasa Term SC", "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: var(--line);
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, figure {
+  margin: 0 0 var(--line);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+a { color: var(--blue-warmer); }
+a:visited { color: var(--magenta-cooler); }
+
+img { max-width: 100%; height: auto; }
+
+hr {
+  border: 0;
+  margin: 0 0 var(--line);
+}
+hr::before { content: "---"; color: var(--fg-dim); }
+
+/* Dired (home) */
+
+main > h1 {
+  margin: 0;
+  color: var(--fg-alt);
+}
+
+.dired { margin: 0; }
+.dired h2 {
+  margin: var(--line) 0 0;
+  color: var(--blue);
+}
+.dired ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dired .line {
+  display: flex;
+  gap: 1ch;
+  padding-left: 2ch;
+}
+.dired .name { white-space: pre; }
+.dired time, .dired .target, .dired .value { color: var(--fg-dim); flex: none; }
+.dired a { color: var(--fg-main); text-decoration: none; }
+.dired a:hover { text-decoration: underline; }
+
+/* Markdown (posts) */
+
+.back { color: var(--fg-dim); }
+
+.post-meta {
+  margin: 0;
+  color: var(--fg-dim);
+}
+
+article { max-width: 88ch; }
+
+article h1::before { content: "# "; }
+article h2::before { content: "## "; }
+article h3::before { content: "### "; }
+article h4::before { content: "#### "; }
+article h1::before, article h2::before, article h3::before,
+article h4::before { color: var(--fg-dim); }
+article h1 { color: var(--fg-main); }
+article h2 { color: var(--yellow-faint); }
+article h3 { color: var(--blue-faint); }
+article h4 { color: var(--magenta); }
+
+article ul { list-style: "- "; padding-left: 2ch; }
+article ol { padding-left: 3ch; }
+article li::marker { color: var(--fg-dim); }
+
+code { font-family: inherit; color: var(--cyan-cooler); }
+:not(pre) > code::before, :not(pre) > code::after {
+  content: "`";
+  color: var(--fg-dim);
+}
+
+pre {
+  overflow-x: auto;
+  background: var(--bg-dim);
+  padding: 0 1ch;
+}
+pre::before { content: "```" attr(data-lang); display: block; color: var(--fg-dim); }
+pre::after { content: "```"; display: block; color: var(--fg-dim); }
+pre code { color: var(--fg-main); }
+
+blockquote {
+  margin-left: 0;
+  padding-left: 1ch;
+  border-left: 1ch solid var(--bg-inactive);
+  color: var(--fg-alt);
+}
+
+table { border-collapse: collapse; }
+th, td {
+  border: 1px solid var(--bg-active);
+  padding: 0 1ch;
+  text-align: left;
+}
+
+/* Font-lock faces in code blocks, as Modus Vivendi colors them. */
+
+.font-lock-keyword { color: var(--magenta-cooler); }
+.font-lock-builtin { color: var(--magenta-warmer); }
+.font-lock-string { color: var(--blue-warmer); }
+.font-lock-doc { color: var(--cyan-faint); }
+.font-lock-comment, .font-lock-comment-delimiter { color: var(--fg-dim); }
+.font-lock-function-name, .font-lock-function-call { color: var(--magenta); }
+.font-lock-type { color: var(--cyan-cooler); }
+.font-lock-constant { color: var(--blue-cooler); }
+.font-lock-variable-name, .font-lock-property-name,
+.font-lock-property-use { color: var(--cyan); }
+.font-lock-preprocessor { color: var(--red-cooler); }
+.font-lock-escape { color: var(--magenta); }
+
+@media (max-width: 600px) {
+  .dired .target { display: none; }
+}
+</style></head><body><main><h1>M-x k</h1><section class="dired"><h2>~/info:</h2><ul><li class="line"><a href="https://github.com/guiyuanju">github</a><span class="target">-&gt; github.com/guiyuanju</span></li><li class="line"><span class="name">tools </span><span class="value">emacs ai</span></li></ul></section><section class="dired"><h2>~/posts:</h2><ul><li class="line"><time datetime="2026-02-02">2026-02-02</time><a href="/generic-vector-in-c.html">&quot;Generic&quot; Vector in C From Scratch</a></li><li class="line"><time datetime="2025-12-24">2025-12-24</time><a href="/lambda-calculus-interpreter.html">Lambda Calculus Interpreter</a></li><li class="line"><time datetime="2025-08-18">2025-08-18</time><a href="/implementing-a-hashtable-in-rust.html">HashTable in Rust from Scratch</a></li><li class="line"><time datetime="2025-05-20">2025-05-20</time><a href="/leetcode-496-next-greater-element-i.html">Improve Performance Greatly By Eliminating Branches</a></li><li class="line"><time datetime="2025-04-29">2025-04-29</time><a href="/crafting-interpreters.html">Book Reading: Crafting Interpreters</a></li><li class="line"><time datetime="2025-03-28">2025-03-28</time><a href="/swiftui-changes-to-unused-state-variables-in-the-body-may-be-ignored.html">SwiftUI Ignores Unused State Variables</a></li><li class="line"><time datetime="2025-03-12">2025-03-12</time><a href="/leetcode-24-swap-nodes-in-pairs.html">Swap Nodes in Pairs -- Iterative vs Recursive</a></li><li class="line"><time datetime="2024-06-20">2024-06-20</time><a href="/python-default-parameters.html">Default Parameters in Python</a></li><li class="line"><time datetime="2023-02-22">2023-02-22</time><a href="/expression-problem.html">Expression Problem</a></li></ul></section><section class="dired"><h2>~/books:</h2><ul><li class="line"><span class="name">A Pale View of Hills    </span><span class="value">read</span></li><li class="line"><span class="name">The Agony of Eros       </span><span class="value">read</span></li><li class="line"><span class="name">Japan: A Modern History </span><span class="value">read</span></li><li class="line"><span class="name">Never Let Me Go         </span><span class="value">read</span></li></ul></section><section class="dired"><h2>~/projects:</h2><ul><li class="line"><a href="https://github.com/guiyuanju/golisp">golisp</a><span class="target">-&gt; github.com/guiyuanju/golisp</span></li><li class="line"><a href="https://github.com/guiyuanju/mossdb">mossdb</a><span class="target">-&gt; github.com/guiyuanju/mossdb</span></li><li class="line"><a href="https://github.com/guiyuanju/lamb">lamb</a><span class="target">-&gt; github.com/guiyuanju/lamb</span></li><li class="line"><a href="https://github.com/guiyuanju/nn">nn</a><span class="target">-&gt; github.com/guiyuanju/nn</span></li><li class="line"><a href="https://github.com/guiyuanju/painting">painting</a><span class="target">-&gt; github.com/guiyuanju/painting</span></li><li class="line"><a href="https://github.com/guiyuanju/blockmepls">blockmepls</a><span class="target">-&gt; github.com/guiyuanju/blockmepls</span></li></ul></section></main></body></html>

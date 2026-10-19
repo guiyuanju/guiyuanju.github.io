@@ -6,6 +6,8 @@ third-party packages. GitHub Pages serves `docs/` from `main` as is.
 - `posts/YYYY-MM-DD-slug.md`: a header form `(:title "..." :date "YYYY-MM-DD")`, then Markdown. Optional `:slug`, `:description`, `:draft t`.
 - `site.el`: site settings and the home page sections.
 - `static/`: copied into `docs/` as is.
+- `style.css`: inlined into every page; code block spans are kept only for classes it styles.
+- Images go in `static/` as WebP; the generator reads their size for `width`/`height`.
 - `docs/`: generated; do not edit.
 
 In Emacs, after `(load "blog.el")`:

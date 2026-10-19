@@ -1,14 +1,173 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Default Parameters in Python</title><meta property="og:title" content="Default Parameters in Python"><meta property="og:url" content="https://guiyuanju.github.io/python-default-parameters.html"><link rel="canonical" href="https://guiyuanju.github.io/python-default-parameters.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/assets/css/main.css"></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2024-06-20">2024-06-20</time></p><h1>Default Parameters in Python</h1><p>Consider the following class:</p>
-<pre data-lang="python"><code><span class="font-lock-keyword">class</span> <span class="font-lock-type">LineCollector</span>:
-    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">__init__</span>(<span class="font-lock-keyword">self</span>, lines<span class="font-lock-operator">=</span>[]):
-        <span class="font-lock-keyword">self</span>.<span class="font-lock-variable-name">lines</span> <span class="font-lock-operator">=</span> lines
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Default Parameters in Python</title><meta property="og:title" content="Default Parameters in Python"><meta property="og:url" content="https://guiyuanju.github.io/python-default-parameters.html"><link rel="canonical" href="https://guiyuanju.github.io/python-default-parameters.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQAAAACFI5MzAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAB3YoTpAAAAAd0SU1FB+kLDxEQBIJn3qIAAAAoSURBVFjD7cmxCQAACMAw/39acVJ8wWQqNAJgy3bKcRzHcZzfBwBgFDd+HQ50ACyQAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDI1LTExLTE1VDE3OjE2OjA0KzAwOjAw0MxQwwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyNS0xMS0xNVQxNzoxNjowNCswMDowMKGR6H8AAAAodEVYdGRhdGU6dGltZXN0YW1wADIwMjUtMTEtMTVUMTc6MTY6MDQrMDA6MDD2hMmgAAAAAElFTkSuQmCC"><style>/* Modus Vivendi palette. */
+:root {
+  --bg-main: #000000;
+  --bg-dim: #1e1e1e;
+  --bg-inactive: #303030;
+  --bg-active: #535353;
+  --fg-main: #ffffff;
+  --fg-dim: #989898;
+  --fg-alt: #c6daff;
+  --blue: #2fafff;
+  --blue-warmer: #79a8ff;
+  --blue-cooler: #00bcff;
+  --blue-faint: #82b0ec;
+  --cyan: #00d3d0;
+  --cyan-cooler: #6ae4b9;
+  --cyan-faint: #9ac8e0;
+  --magenta: #feacd0;
+  --magenta-warmer: #f78fe7;
+  --magenta-cooler: #b6a0ff;
+  --yellow-faint: #d2b580;
+  --red-cooler: #ff7f9f;
 
-    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">collect</span>(<span class="font-lock-keyword">self</span>, line):
+  --line: 1.5em;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 1ch var(--line);
+  background: var(--bg-main);
+  color: var(--fg-main);
+  font-family: "Sarasa Mono SC", "Sarasa Term SC", "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: var(--line);
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, figure {
+  margin: 0 0 var(--line);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+a { color: var(--blue-warmer); }
+a:visited { color: var(--magenta-cooler); }
+
+img { max-width: 100%; height: auto; }
+
+hr {
+  border: 0;
+  margin: 0 0 var(--line);
+}
+hr::before { content: "---"; color: var(--fg-dim); }
+
+/* Dired (home) */
+
+main > h1 {
+  margin: 0;
+  color: var(--fg-alt);
+}
+
+.dired { margin: 0; }
+.dired h2 {
+  margin: var(--line) 0 0;
+  color: var(--blue);
+}
+.dired ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dired .line {
+  display: flex;
+  gap: 1ch;
+  padding-left: 2ch;
+}
+.dired .name { white-space: pre; }
+.dired time, .dired .target, .dired .value { color: var(--fg-dim); flex: none; }
+.dired a { color: var(--fg-main); text-decoration: none; }
+.dired a:hover { text-decoration: underline; }
+
+/* Markdown (posts) */
+
+.back { color: var(--fg-dim); }
+
+.post-meta {
+  margin: 0;
+  color: var(--fg-dim);
+}
+
+article { max-width: 88ch; }
+
+article h1::before { content: "# "; }
+article h2::before { content: "## "; }
+article h3::before { content: "### "; }
+article h4::before { content: "#### "; }
+article h1::before, article h2::before, article h3::before,
+article h4::before { color: var(--fg-dim); }
+article h1 { color: var(--fg-main); }
+article h2 { color: var(--yellow-faint); }
+article h3 { color: var(--blue-faint); }
+article h4 { color: var(--magenta); }
+
+article ul { list-style: "- "; padding-left: 2ch; }
+article ol { padding-left: 3ch; }
+article li::marker { color: var(--fg-dim); }
+
+code { font-family: inherit; color: var(--cyan-cooler); }
+:not(pre) > code::before, :not(pre) > code::after {
+  content: "`";
+  color: var(--fg-dim);
+}
+
+pre {
+  overflow-x: auto;
+  background: var(--bg-dim);
+  padding: 0 1ch;
+}
+pre::before { content: "```" attr(data-lang); display: block; color: var(--fg-dim); }
+pre::after { content: "```"; display: block; color: var(--fg-dim); }
+pre code { color: var(--fg-main); }
+
+blockquote {
+  margin-left: 0;
+  padding-left: 1ch;
+  border-left: 1ch solid var(--bg-inactive);
+  color: var(--fg-alt);
+}
+
+table { border-collapse: collapse; }
+th, td {
+  border: 1px solid var(--bg-active);
+  padding: 0 1ch;
+  text-align: left;
+}
+
+/* Font-lock faces in code blocks, as Modus Vivendi colors them. */
+
+.font-lock-keyword { color: var(--magenta-cooler); }
+.font-lock-builtin { color: var(--magenta-warmer); }
+.font-lock-string { color: var(--blue-warmer); }
+.font-lock-doc { color: var(--cyan-faint); }
+.font-lock-comment, .font-lock-comment-delimiter { color: var(--fg-dim); }
+.font-lock-function-name, .font-lock-function-call { color: var(--magenta); }
+.font-lock-type { color: var(--cyan-cooler); }
+.font-lock-constant { color: var(--blue-cooler); }
+.font-lock-variable-name, .font-lock-property-name,
+.font-lock-property-use { color: var(--cyan); }
+.font-lock-preprocessor { color: var(--red-cooler); }
+.font-lock-escape { color: var(--magenta); }
+
+@media (max-width: 600px) {
+  .dired .target { display: none; }
+}
+</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2024-06-20">2024-06-20</time></p><h1>Default Parameters in Python</h1><p>Consider the following class:</p>
+<pre data-lang="python"><code><span class="font-lock-keyword">class</span> <span class="font-lock-type">LineCollector</span>:
+    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">__init__</span>(<span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">lines</span>=[]):
+        <span class="font-lock-keyword">self</span>.<span class="font-lock-variable-name">lines</span> = lines
+
+    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">collect</span>(<span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">line</span>):
         <span class="font-lock-keyword">self</span>.lines.append(line)
 
-<span class="font-lock-variable-name">c1</span> <span class="font-lock-operator">=</span> LineCollector()
-<span class="font-lock-variable-name">c2</span> <span class="font-lock-operator">=</span> LineCollector()
+<span class="font-lock-variable-name">c1</span> = <span class="font-lock-type">LineCollector</span>()
+<span class="font-lock-variable-name">c2</span> = <span class="font-lock-type">LineCollector</span>()
 
 c1.collect(<span class="font-lock-string">&quot;Hi mom&quot;</span>)
 c2.collect(<span class="font-lock-string">&quot;Are you ok Annie?&quot;</span>)
@@ -20,27 +179,27 @@ c2.collect(<span class="font-lock-string">&quot;Are you ok Annie?&quot;</span>)
 <p>Surprising right? As a programmer who are new to Python, I am very confused by this behavior. The mechanism behind it is:</p>
 <ol><li>Python evaluate the default value only once when it come across the def statement</li><li>Every subsequent call uses the same pre-evaluated default object.</li></ol>
 <p>Someone mentioned that this behavior can actually be useful for capturing a variable’s value inside a loop:</p>
-<pre data-lang="python"><code><span class="font-lock-variable-name">fs</span> <span class="font-lock-operator">=</span> []
-<span class="font-lock-keyword">for</span> i <span class="font-lock-keyword">in</span> <span class="font-lock-builtin">range</span>(10):
+<pre data-lang="python"><code><span class="font-lock-variable-name">fs</span> = []
+<span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">i</span> <span class="font-lock-keyword">in</span> range(10):
     <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>():
         <span class="font-lock-builtin">print</span>(i)
     fs.append(f)
 
-[f() <span class="font-lock-keyword">for</span> f <span class="font-lock-keyword">in</span> fs]</code></pre>
+[f() <span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">f</span> <span class="font-lock-keyword">in</span> fs]</code></pre>
 <p>It prints out 10 ‘9’s, with this feature, the following program print 0 to 9 correctly:</p>
-<pre data-lang="python"><code><span class="font-lock-variable-name">fs</span> <span class="font-lock-operator">=</span> []
-<span class="font-lock-keyword">for</span> i <span class="font-lock-keyword">in</span> <span class="font-lock-builtin">range</span>(10):
-    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>(i<span class="font-lock-operator">=</span>i):
+<pre data-lang="python"><code><span class="font-lock-variable-name">fs</span> = []
+<span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">i</span> <span class="font-lock-keyword">in</span> range(10):
+    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>(<span class="font-lock-variable-name">i</span>=i):
         <span class="font-lock-builtin">print</span>(i)
     fs.append(f)
 
-[f() <span class="font-lock-keyword">for</span> f <span class="font-lock-keyword">in</span> fs]</code></pre>
+[f() <span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">f</span> <span class="font-lock-keyword">in</span> fs]</code></pre>
 <p>Alternatively, we can use a closure like this, though it’s a bit more complex:</p>
-<pre data-lang="python"><code><span class="font-lock-variable-name">fs</span> <span class="font-lock-operator">=</span> []
-<span class="font-lock-keyword">for</span> i <span class="font-lock-keyword">in</span> <span class="font-lock-builtin">range</span>(10):
-    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>(i):
+<pre data-lang="python"><code><span class="font-lock-variable-name">fs</span> = []
+<span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">i</span> <span class="font-lock-keyword">in</span> range(10):
+    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>(<span class="font-lock-variable-name">i</span>):
         <span class="font-lock-keyword">return</span> <span class="font-lock-keyword">lambda</span>: (<span class="font-lock-builtin">print</span>(i))
     fs.append(f(i))
 
-[f() <span class="font-lock-keyword">for</span> f <span class="font-lock-keyword">in</span> fs]</code></pre>
+[f() <span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">f</span> <span class="font-lock-keyword">in</span> fs]</code></pre>
 <p>This problem actually reminds me of the similar for loop variable capture problem in Go, which is fixed in Go 1.22 https://go.dev/blog/loopvar-preview</p></article></main></body></html>

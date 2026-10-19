@@ -143,10 +143,10 @@ b. Linear probing&lt;/li&gt;&lt;/ol&gt;
 
 &lt;span class=&quot;font-lock-keyword&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Key&lt;/span&gt; {
     &lt;span class=&quot;font-lock-keyword&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;new&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;name&lt;/span&gt;: &amp;amp;&lt;span class=&quot;font-lock-type&quot;&gt;str&lt;/span&gt;) -&amp;gt; &lt;span class=&quot;font-lock-type&quot;&gt;Self&lt;/span&gt; {
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;hash&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;u32&lt;/span&gt; = &lt;span class=&quot;font-lock-number&quot;&gt;2166136261u32&lt;/span&gt;;
+        &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;hash&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;u32&lt;/span&gt; = 2166136261u32;
         &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &amp;amp;&lt;span class=&quot;font-lock-variable-name&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; name.as_bytes() {
             &lt;span class=&quot;font-lock-variable-name&quot;&gt;hash&lt;/span&gt; ^= b &lt;span class=&quot;font-lock-keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;u32&lt;/span&gt;;
-            &lt;span class=&quot;font-lock-variable-name&quot;&gt;hash&lt;/span&gt; = hash.wrapping_mul(&lt;span class=&quot;font-lock-number&quot;&gt;16777619&lt;/span&gt;);
+            &lt;span class=&quot;font-lock-variable-name&quot;&gt;hash&lt;/span&gt; = hash.wrapping_mul(16777619);
         }
 
         &lt;span class=&quot;font-lock-type&quot;&gt;Self&lt;/span&gt; {
@@ -206,13 +206,13 @@ b. Linear probing&lt;/li&gt;&lt;/ol&gt;
             }
         }
 
-        &lt;span class=&quot;font-lock-variable-name&quot;&gt;index&lt;/span&gt; = (index + &lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;) % entries.len();
+        &lt;span class=&quot;font-lock-variable-name&quot;&gt;index&lt;/span&gt; = (index + 1) % entries.len();
     }
 }&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Next, we will implement the lookup operation ⁠get. Since we already have ⁠find_entry, implementing the lookup becomes very straightforward.&lt;/p&gt;
 &lt;pre data-lang=&quot;rust&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Table&lt;/span&gt; {
     &lt;span class=&quot;font-lock-keyword&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;get&lt;/span&gt;(&amp;amp;&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;key&lt;/span&gt;: &amp;amp;&lt;span class=&quot;font-lock-type&quot;&gt;Key&lt;/span&gt;) -&amp;gt; &lt;span class=&quot;font-lock-type&quot;&gt;Option&lt;/span&gt;&amp;lt;&lt;span class=&quot;font-lock-type&quot;&gt;Value&lt;/span&gt;&amp;gt; {
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries.len() == &lt;span class=&quot;font-lock-number&quot;&gt;0&lt;/span&gt; {
+        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries.len() == 0 {
             &lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;None&lt;/span&gt;;
         }
 
@@ -231,12 +231,12 @@ b. Linear probing&lt;/li&gt;&lt;/ol&gt;
     &lt;span class=&quot;font-lock-keyword&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;adjust_capacity&lt;/span&gt;(&amp;amp;&lt;span class=&quot;font-lock-keyword&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;capacity&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;usize&lt;/span&gt;) {
         &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;entries&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;Vec&lt;/span&gt;&amp;lt;&lt;span class=&quot;font-lock-type&quot;&gt;Entry&lt;/span&gt;&amp;gt; = &lt;span class=&quot;font-lock-builtin&quot;&gt;vec&lt;/span&gt;![&lt;span class=&quot;font-lock-type&quot;&gt;Entry&lt;/span&gt;::&lt;span class=&quot;font-lock-type&quot;&gt;None&lt;/span&gt;; capacity];
 
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count = &lt;span class=&quot;font-lock-number&quot;&gt;0&lt;/span&gt;;
+        &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count = 0;
         &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; &amp;amp;&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries {
             &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Entry&lt;/span&gt;::&lt;span class=&quot;font-lock-type&quot;&gt;KeyValue&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;entry&lt;/span&gt;) = e {
                 &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;FindResult&lt;/span&gt;::&lt;span class=&quot;font-lock-type&quot;&gt;Available&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;index&lt;/span&gt;) = find_entry(&amp;amp;&lt;span class=&quot;font-lock-keyword&quot;&gt;mut&lt;/span&gt; entries, &amp;amp;entry.key) {
                     &lt;span class=&quot;font-lock-variable-name&quot;&gt;entries&lt;/span&gt;[&lt;span class=&quot;font-lock-variable-name&quot;&gt;index&lt;/span&gt;] = &lt;span class=&quot;font-lock-type&quot;&gt;Entry&lt;/span&gt;::&lt;span class=&quot;font-lock-type&quot;&gt;KeyValue&lt;/span&gt;(entry.clone());
-                    &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count += &lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;
+                    &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count += 1
                 }
             }
         }
@@ -246,14 +246,14 @@ b. Linear probing&lt;/li&gt;&lt;/ol&gt;
 }&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;With ⁠adjust_capacity implemented, we can now implement the ⁠set operation. First, we check whether inserting will exceed the load threshold. If it does, we expand the space (I arbitrarily chose a strategy: if the length is less than 8, expand it to 8 directly; otherwise, double the current length). Then, we use ⁠find_entry to determine the index where we can insert the key. If ⁠Found is returned, it means the key already exists, so we update it; if ⁠Available is returned, it means the key does not exist, and there is an empty slot available, so we increment the element count ⁠count and insert the new entry; if ⁠Tombstone is returned, we treat the tombstone as an existing element and do not increment ⁠count. This is crucial because if we do not consider the tombstone as an existing element, when the array is filled with tombstones and no empty slots remain, ⁠find_entry could enter an infinite loop.&lt;/p&gt;
 &lt;pre data-lang=&quot;rust&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Table&lt;/span&gt; {
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;MAX_LOAD&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;f32&lt;/span&gt; = &lt;span class=&quot;font-lock-number&quot;&gt;0.75&lt;/span&gt;;
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;MAX_LOAD&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;f32&lt;/span&gt; = 0.75;
 
     &lt;span class=&quot;font-lock-keyword&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;set&lt;/span&gt;(&amp;amp;&lt;span class=&quot;font-lock-keyword&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;key&lt;/span&gt;: &amp;amp;&lt;span class=&quot;font-lock-type&quot;&gt;Key&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;value&lt;/span&gt;: &amp;amp;&lt;span class=&quot;font-lock-type&quot;&gt;Value&lt;/span&gt;) {
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; (&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count + &lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;) &lt;span class=&quot;font-lock-keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;f32&lt;/span&gt; &amp;gt; &lt;span class=&quot;font-lock-type&quot;&gt;Self&lt;/span&gt;::&lt;span class=&quot;font-lock-type&quot;&gt;MAX_LOAD&lt;/span&gt; * &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries.len() &lt;span class=&quot;font-lock-keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;f32&lt;/span&gt; {
-            &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;capacity&lt;/span&gt; = &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries.len() &amp;lt; &lt;span class=&quot;font-lock-number&quot;&gt;8&lt;/span&gt; {
-                &lt;span class=&quot;font-lock-number&quot;&gt;8&lt;/span&gt;
+        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; (&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count + 1) &lt;span class=&quot;font-lock-keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;f32&lt;/span&gt; &amp;gt; &lt;span class=&quot;font-lock-type&quot;&gt;Self&lt;/span&gt;::&lt;span class=&quot;font-lock-type&quot;&gt;MAX_LOAD&lt;/span&gt; * &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries.len() &lt;span class=&quot;font-lock-keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;f32&lt;/span&gt; {
+            &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;capacity&lt;/span&gt; = &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries.len() &amp;lt; 8 {
+                8
             } &lt;span class=&quot;font-lock-keyword&quot;&gt;else&lt;/span&gt; {
-                &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries.len() * &lt;span class=&quot;font-lock-number&quot;&gt;2&lt;/span&gt;
+                &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries.len() * 2
             };
 
             &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.adjust_capacity(capacity);
@@ -262,7 +262,7 @@ b. Linear probing&lt;/li&gt;&lt;/ol&gt;
         &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;index&lt;/span&gt; = &lt;span class=&quot;font-lock-keyword&quot;&gt;match&lt;/span&gt; find_entry(&amp;amp;&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.entries, &amp;amp;key) {
             &lt;span class=&quot;font-lock-type&quot;&gt;FindResult&lt;/span&gt;::&lt;span class=&quot;font-lock-type&quot;&gt;Found&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;index&lt;/span&gt;) =&amp;gt; index,
             &lt;span class=&quot;font-lock-type&quot;&gt;FindResult&lt;/span&gt;::&lt;span class=&quot;font-lock-type&quot;&gt;Available&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;index&lt;/span&gt;) =&amp;gt; {
-                &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count += &lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;;
+                &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count += 1;
                 index
             }
             &lt;span class=&quot;font-lock-type&quot;&gt;FindResult&lt;/span&gt;::&lt;span class=&quot;font-lock-type&quot;&gt;Tombstone&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;index&lt;/span&gt;) =&amp;gt; index,
@@ -276,7 +276,7 @@ b. Linear probing&lt;/li&gt;&lt;/ol&gt;
 &lt;p&gt;With the tombstone mechanism in place, implementing the delete operation becomes quite simple; we just replace the corresponding element with a tombstone.&lt;/p&gt;
 &lt;pre data-lang=&quot;rust&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Table&lt;/span&gt; {
 	&lt;span class=&quot;font-lock-keyword&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;delete&lt;/span&gt;(&amp;amp;&lt;span class=&quot;font-lock-keyword&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;key&lt;/span&gt;: &amp;amp;&lt;span class=&quot;font-lock-type&quot;&gt;Key&lt;/span&gt;) {
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count == &lt;span class=&quot;font-lock-number&quot;&gt;0&lt;/span&gt; {
+        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.count == 0 {
             &lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt;;
         }
 
@@ -288,9 +288,9 @@ b. Linear probing&lt;/li&gt;&lt;/ol&gt;
 &lt;p&gt;Now, we have a complete and functional Hash Table implementation. Let’s perform some benchmarks.&lt;/p&gt;
 &lt;p&gt;I define an operation that involves inserting a certain number &lt;code&gt;⁠n&lt;/code&gt; of elements, then deleting &lt;code&gt;⁠n/10&lt;/code&gt; of those elements, and finally querying ⁠&lt;code&gt;n*200&lt;/code&gt; times to calculate the average time taken for each operation.&lt;/p&gt;
 &lt;p&gt;The results are as follows, where the x-axis represents the number of elements ⁠n (from 10 to 1500), and the y-axis represents the average time taken for operations at the current scale. It can be observed that the average time fluctuates in a sawtooth pattern as the scale increases. Each rising segment indicates that, under fixed storage size, the operation times increase as the number of elements stored in the Hash Table increases (indicating more collisions). When the threshold is reached, the space is expanded, and the average operation time drops accordingly.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/assets/images/244E2B0BC39A82FB57745536193C9312.png&quot; alt=&quot;average op time&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/244E2B0BC39A82FB57745536193C9312.webp&quot; alt=&quot;average op time&quot; width=&quot;640&quot; height=&quot;480&quot; loading=&quot;lazy&quot;&gt;&lt;/p&gt;
 &lt;p&gt;Additionally, I calculated the amortized operation time. Similarly, the x-axis represents the input size, but the y-axis shows the average time taken for all operations up to that point. It can be seen that the amortized time complexity of the Hash Table indeed approaches O(1).&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/assets/images/8AF2B7052E9543A14EF8DB5B4DBAC41F.png&quot; alt=&quot;amortized op time&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/8AF2B7052E9543A14EF8DB5B4DBAC41F.webp&quot; alt=&quot;amortized op time&quot; width=&quot;640&quot; height=&quot;480&quot; loading=&quot;lazy&quot;&gt;&lt;/p&gt;
 &lt;p&gt;Through this implementation, I gained insights into some unique details of Hash Tables, such as the peculiarities of deletion in linear probing, the pros and cons of different collision resolution algorithms, and the actual time complexity of Hash Tables.&lt;/p&gt;
 &lt;p&gt;There are many more aspects to discuss regarding Hash Tables, such as comparing the performance of different hash functions, empirically comparing the performance differences of various collision solving algorithms, and exploring algorithmic performance beyond the tombstone mechanism in linear probing. These topics are left for future exploration.&lt;/p&gt;</content>
 </entry>
@@ -322,9 +322,9 @@ Explanation: The next greater element for each value of nums1 is as follows:&lt;
 	&lt;span class=&quot;font-lock-variable-name&quot;&gt;greater&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;map&lt;/span&gt;[&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;]&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;{}
 	&lt;span class=&quot;font-lock-variable-name&quot;&gt;decreasing&lt;/span&gt; := []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;{}
 	&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;_&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;n&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;range&lt;/span&gt; nums2 {
-		&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing) &amp;gt; &lt;span class=&quot;font-lock-number&quot;&gt;0&lt;/span&gt; &amp;amp;&amp;amp; n &amp;gt; decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;] {
-			greater[decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;]] = n
-			decreasing = decreasing[:&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;]
+		&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing) &amp;gt; 0 &amp;amp;&amp;amp; n &amp;gt; decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-1] {
+			greater[decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-1]] = n
+			decreasing = decreasing[:&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-1]
 		}
 		decreasing = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(decreasing, n)
 	}
@@ -335,7 +335,7 @@ Explanation: The next greater element for each value of nums1 is as follows:&lt;
 		&lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;v&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;ok&lt;/span&gt; := greater[n]; ok {
 			res = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(res, v)
 		} &lt;span class=&quot;font-lock-keyword&quot;&gt;else&lt;/span&gt; {
-			res = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(res, -&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;)
+			res = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(res, -1)
 		}
 	}
 
@@ -351,16 +351,16 @@ and assign &lt;code&gt;-1&lt;/code&gt; to the corresponding element in the map &
 	&lt;span class=&quot;font-lock-variable-name&quot;&gt;greater&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;map&lt;/span&gt;[&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;]&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;{}
 	&lt;span class=&quot;font-lock-variable-name&quot;&gt;decreasing&lt;/span&gt; := []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;{}
 	&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;_&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;n&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;range&lt;/span&gt; nums2 {
-		&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing) &amp;gt; &lt;span class=&quot;font-lock-number&quot;&gt;0&lt;/span&gt; &amp;amp;&amp;amp; n &amp;gt; decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;] {
-			greater[decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;]] = n
-			decreasing = decreasing[:&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;]
+		&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing) &amp;gt; 0 &amp;amp;&amp;amp; n &amp;gt; decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-1] {
+			greater[decreasing[&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-1]] = n
+			decreasing = decreasing[:&lt;span class=&quot;font-lock-builtin&quot;&gt;len&lt;/span&gt;(decreasing)-1]
 		}
 		decreasing = &lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(decreasing, n)
 	}
 
 	&lt;span class=&quot;font-lock-comment&quot;&gt;// added here&lt;/span&gt;
 	&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;_&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;n&lt;/span&gt; := &lt;span class=&quot;font-lock-keyword&quot;&gt;range&lt;/span&gt; decreasing {
-		greater[n] = -&lt;span class=&quot;font-lock-number&quot;&gt;1&lt;/span&gt;
+		greater[n] = -1
 	}
 
 	&lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;res&lt;/span&gt; []&lt;span class=&quot;font-lock-type&quot;&gt;int&lt;/span&gt;
@@ -394,59 +394,59 @@ structure of modern CPU.&lt;/p&gt;</content>
 &lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;SwiftUI&lt;/span&gt;
 &lt;span class=&quot;font-lock-keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;PhotosUI&lt;/span&gt;
 
-&lt;span class=&quot;font-lock-keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;ContentView&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; namedPhotos&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;[]&lt;/span&gt;
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; pickerItem&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPickerItem&lt;/span&gt;&lt;span class=&quot;font-lock-operator&quot;&gt;?&lt;/span&gt;
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; currentNamedPhoto&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;&lt;span class=&quot;font-lock-operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt;
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; isAskNamePresented &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-constant&quot;&gt;false&lt;/span&gt;
+&lt;span class=&quot;font-lock-keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;ContentView&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; namedPhotos: [&lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;] = []
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; pickerItem: &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPickerItem&lt;/span&gt;?
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; currentNamedPhoto: &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;? = &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt;
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; isAskNamePresented = &lt;span class=&quot;font-lock-constant&quot;&gt;false&lt;/span&gt;
 
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; body&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPicker&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Select a photo&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; selection&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; $pickerItem&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; matching&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-property-use&quot;&gt;images&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-            &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;onChange&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; pickerItem&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;_&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; newItem &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
-                &lt;span class=&quot;font-lock-type&quot;&gt;Task&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; data &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;await&lt;/span&gt; newItem&lt;span class=&quot;font-lock-operator&quot;&gt;?.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;loadTransferable&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;type&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                        currentNamedPhoto &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;photo&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; data&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; name&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                        isAskNamePresented &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-constant&quot;&gt;true&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-                &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;sheet&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;isPresented&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; $isAskNamePresented&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;font-lock-type&quot;&gt;VStack&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; currentNamedPhoto &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-function-call&quot;&gt;currentNamedPhoto&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                        &lt;span class=&quot;font-lock-function-call&quot;&gt;toImage&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;from&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; currentNamedPhoto&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                            &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;resizable&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;()&lt;/span&gt;
-                            &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;scaledToFit&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;()&lt;/span&gt;
-                            &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;frame&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;height&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-number&quot;&gt;300&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; namedPhoto &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Binding&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;$currentNamedPhoto&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                            &lt;span class=&quot;font-lock-type&quot;&gt;TextField&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Name&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; text&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; namedPhoto&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-builtin&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                        &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-                        &lt;span class=&quot;font-lock-type&quot;&gt;Button&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Add&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                            namedPhotos&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;currentNamedPhoto&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                            isAskNamePresented &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-constant&quot;&gt;false&lt;/span&gt;
-                        &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                        &lt;span class=&quot;font-lock-type&quot;&gt;Text&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;No photo selected&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-                &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; body: &lt;span class=&quot;font-lock-keyword&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
+        &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPicker&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Select a photo&amp;quot;&lt;/span&gt;, selection: $pickerItem, matching: .&lt;span class=&quot;font-lock-property-use&quot;&gt;images&lt;/span&gt;)
+            .&lt;span class=&quot;font-lock-function-call&quot;&gt;onChange&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;of&lt;/span&gt;: pickerItem) {_, newItem &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
+                &lt;span class=&quot;font-lock-type&quot;&gt;Task&lt;/span&gt; {
+                    &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; data = &lt;span class=&quot;font-lock-keyword&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;await&lt;/span&gt; newItem?.&lt;span class=&quot;font-lock-function-call&quot;&gt;loadTransferable&lt;/span&gt;(type: &lt;span class=&quot;font-lock-builtin&quot;&gt;Data&lt;/span&gt;.&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;) {
+                        currentNamedPhoto = &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;(photo: data, name: &lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;)
+                        isAskNamePresented = &lt;span class=&quot;font-lock-constant&quot;&gt;true&lt;/span&gt;
+                    }
+                }
+            }
+            .&lt;span class=&quot;font-lock-function-call&quot;&gt;sheet&lt;/span&gt;(isPresented: $isAskNamePresented) {
+                &lt;span class=&quot;font-lock-type&quot;&gt;VStack&lt;/span&gt; {
+                    &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; currentNamedPhoto = &lt;span class=&quot;font-lock-function-call&quot;&gt;currentNamedPhoto&lt;/span&gt; {
+                        &lt;span class=&quot;font-lock-function-call&quot;&gt;toImage&lt;/span&gt;(from: currentNamedPhoto.&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;)
+                            .&lt;span class=&quot;font-lock-function-call&quot;&gt;resizable&lt;/span&gt;()
+                            .&lt;span class=&quot;font-lock-function-call&quot;&gt;scaledToFit&lt;/span&gt;()
+                            .&lt;span class=&quot;font-lock-function-call&quot;&gt;frame&lt;/span&gt;(height: 300)
+                        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; namedPhoto = &lt;span class=&quot;font-lock-type&quot;&gt;Binding&lt;/span&gt;($currentNamedPhoto) {
+                            &lt;span class=&quot;font-lock-type&quot;&gt;TextField&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Name&amp;quot;&lt;/span&gt;, text: namedPhoto.&lt;span class=&quot;font-lock-builtin&quot;&gt;name&lt;/span&gt;)
+                        }
+                        &lt;span class=&quot;font-lock-type&quot;&gt;Button&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Add&amp;quot;&lt;/span&gt;) {
+                            namedPhotos.&lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(currentNamedPhoto)
+                            isAskNamePresented = &lt;span class=&quot;font-lock-constant&quot;&gt;false&lt;/span&gt;
+                        }
+                    } &lt;span class=&quot;font-lock-keyword&quot;&gt;else&lt;/span&gt; {
+                        &lt;span class=&quot;font-lock-type&quot;&gt;Text&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;No photo selected&amp;quot;&lt;/span&gt;)
+                    }
+                }
+            }
 
-        &lt;span class=&quot;font-lock-type&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;namedPhotos&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; id&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; \&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-property-use&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt; photo &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
-            &lt;span class=&quot;font-lock-type&quot;&gt;VStack&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;alignment&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-property-use&quot;&gt;leading&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;font-lock-type&quot;&gt;Text&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;hi&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                &lt;span class=&quot;font-lock-function-call&quot;&gt;toImage&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;from&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; photo&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;resizable&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;()&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;scaledToFit&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;()&lt;/span&gt;
-            &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;font-lock-type&quot;&gt;List&lt;/span&gt;(namedPhotos, id: \.&lt;span class=&quot;font-lock-property-use&quot;&gt;id&lt;/span&gt;) { photo &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
+            &lt;span class=&quot;font-lock-type&quot;&gt;VStack&lt;/span&gt;(alignment: .&lt;span class=&quot;font-lock-property-use&quot;&gt;leading&lt;/span&gt;) {
+                &lt;span class=&quot;font-lock-type&quot;&gt;Text&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;hi&amp;quot;&lt;/span&gt;)
+                &lt;span class=&quot;font-lock-function-call&quot;&gt;toImage&lt;/span&gt;(from: photo.&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;)
+                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;resizable&lt;/span&gt;()
+                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;scaledToFit&lt;/span&gt;()
+            }
+        }
+    }
 
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;toImage&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;from data&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Image&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; uiImage &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;UIImage&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; data&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Image&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;uiImage&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; uiImage&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;font-lock-builtin&quot;&gt;fatalError&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Couldn't convert data to UIImage&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;toImage&lt;/span&gt;(from data: &lt;span class=&quot;font-lock-builtin&quot;&gt;Data&lt;/span&gt;) -&amp;gt; &lt;span class=&quot;font-lock-type&quot;&gt;Image&lt;/span&gt; {
+        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; uiImage = &lt;span class=&quot;font-lock-type&quot;&gt;UIImage&lt;/span&gt;(data: data) {
+            &lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Image&lt;/span&gt;(uiImage: uiImage)
+        }
+        &lt;span class=&quot;font-lock-builtin&quot;&gt;fatalError&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Couldn't convert data to UIImage&amp;quot;&lt;/span&gt;)
+    }
+}&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;To briefly explain the code: the ⁠PhotosPicker allows users to select a photo from their library. Once the photo data is loaded, the sheet is triggered by updating the variable. This is the key functionality.&lt;/p&gt;
 &lt;p&gt;However, the first time I selected a photo, the sheet was presented, but its content displayed “No photo selected.” This was unexpected!&lt;/p&gt;
 &lt;p&gt;The ⁠isAskNamePresented variable is set after we assign the photo data to ⁠currentNamedPhoto, so the sheet should recognize that ⁠currentNamedPhoto is no longer nil.&lt;/p&gt;
@@ -454,39 +454,39 @@ structure of modern CPU.&lt;/p&gt;</content>
 &lt;p&gt;Next, I considered whether the closure might be related to the issue, as the variable captured within the closure has value semantics. This means the value does not change, but I soon realized this assumption was incorrect.&lt;/p&gt;
 &lt;p&gt;After conducting some research, I found an explanation on StackOverflow: &lt;a href=&quot;https://stackoverflow.com/questions/66262213/swiftui-sheet-unexpectedly-found-nil-while-unwrapping-an-optional-value/66267507#66267507&quot;&gt;link&lt;/a&gt;. It states that changes are ignored because the variable is not directly used within the ⁠body property, leading SwiftUI to optimize it out.&lt;/p&gt;
 &lt;p&gt;To resolve this, I updated the code by adding one line:&lt;/p&gt;
-&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; body&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; currentNamedPhoto &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-function-call&quot;&gt;currentNamedPhoto&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{}&lt;/span&gt;
+&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; body: &lt;span class=&quot;font-lock-keyword&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
+        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; currentNamedPhoto = &lt;span class=&quot;font-lock-function-call&quot;&gt;currentNamedPhoto&lt;/span&gt; {}
 
-        &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPicker&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Select a photo&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; selection&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; $pickerItem&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; matching&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-property-use&quot;&gt;images&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPicker&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Select a photo&amp;quot;&lt;/span&gt;, selection: $pickerItem, matching: .&lt;span class=&quot;font-lock-property-use&quot;&gt;images&lt;/span&gt;)
 &lt;span class=&quot;font-lock-comment-delimiter&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;font-lock-comment&quot;&gt; ...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Now, everything works as intended!&lt;/p&gt;
 &lt;p&gt;Alternatively, we can use another initializer for the sheet: &lt;a href=&quot;https://developer.apple.com/documentation/swiftui/view/sheet(item:ondismiss:content:)&quot;&gt;link&lt;/a&gt;&lt;/p&gt;
-&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;ContentView&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; namedPhotos&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;[]&lt;/span&gt;
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; pickerItem&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPickerItem&lt;/span&gt;&lt;span class=&quot;font-lock-operator&quot;&gt;?&lt;/span&gt;
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; currentNamedPhoto&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;&lt;span class=&quot;font-lock-operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt;
+&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;ContentView&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; namedPhotos: [&lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;] = []
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; pickerItem: &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPickerItem&lt;/span&gt;?
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; currentNamedPhoto: &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;? = &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt;
 
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; body&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPicker&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Select a photo&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; selection&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; $pickerItem&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; matching&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-property-use&quot;&gt;images&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-            &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;onChange&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; pickerItem&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;_&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; newItem &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
-                &lt;span class=&quot;font-lock-type&quot;&gt;Task&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; data &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;await&lt;/span&gt; newItem&lt;span class=&quot;font-lock-operator&quot;&gt;?.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;loadTransferable&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;type&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                        currentNamedPhoto &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;photo&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; data&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; name&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-                &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;sheet&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;item&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; $currentNamedPhoto&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; onDismiss&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt; item &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
-                &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; newItem &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;photo&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; item&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; name&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                &lt;span class=&quot;font-lock-function-call&quot;&gt;toImage&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;from&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; newItem&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;resizable&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;()&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;scaledToFit&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;()&lt;/span&gt;
-                    &lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-function-call&quot;&gt;frame&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;height&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-number&quot;&gt;300&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                &lt;span class=&quot;font-lock-type&quot;&gt;TextField&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Name&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; text&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Binding&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt; newItem&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-builtin&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;font-lock-delimiter&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt; newItem&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-builtin&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; $0 &lt;span class=&quot;font-lock-bracket&quot;&gt;}))&lt;/span&gt;
-                &lt;span class=&quot;font-lock-type&quot;&gt;Button&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Add&amp;quot;&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;font-lock-bracket&quot;&gt;{&lt;/span&gt;
-                    namedPhotos&lt;span class=&quot;font-lock-operator&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;font-lock-bracket&quot;&gt;(&lt;/span&gt;newItem&lt;span class=&quot;font-lock-bracket&quot;&gt;)&lt;/span&gt;
-                    currentNamedPhoto &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt;
-                &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;font-lock-bracket&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; body: &lt;span class=&quot;font-lock-keyword&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
+        &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPicker&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Select a photo&amp;quot;&lt;/span&gt;, selection: $pickerItem, matching: .&lt;span class=&quot;font-lock-property-use&quot;&gt;images&lt;/span&gt;)
+            .&lt;span class=&quot;font-lock-function-call&quot;&gt;onChange&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;of&lt;/span&gt;: pickerItem) {_, newItem &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
+                &lt;span class=&quot;font-lock-type&quot;&gt;Task&lt;/span&gt; {
+                    &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; data = &lt;span class=&quot;font-lock-keyword&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;await&lt;/span&gt; newItem?.&lt;span class=&quot;font-lock-function-call&quot;&gt;loadTransferable&lt;/span&gt;(type: &lt;span class=&quot;font-lock-builtin&quot;&gt;Data&lt;/span&gt;.&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;) {
+                        currentNamedPhoto = &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;(photo: data, name: &lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;)
+                    }
+                }
+            }
+            .&lt;span class=&quot;font-lock-function-call&quot;&gt;sheet&lt;/span&gt;(item: $currentNamedPhoto, onDismiss: { }) { item &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
+                &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; newItem = &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;(photo: item.&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;, name: &lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;)
+                &lt;span class=&quot;font-lock-function-call&quot;&gt;toImage&lt;/span&gt;(from: newItem.&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;)
+                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;resizable&lt;/span&gt;()
+                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;scaledToFit&lt;/span&gt;()
+                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;frame&lt;/span&gt;(height: 300)
+                &lt;span class=&quot;font-lock-type&quot;&gt;TextField&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Name&amp;quot;&lt;/span&gt;, text: &lt;span class=&quot;font-lock-type&quot;&gt;Binding&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;get&lt;/span&gt;: { newItem.&lt;span class=&quot;font-lock-builtin&quot;&gt;name&lt;/span&gt; }, &lt;span class=&quot;font-lock-keyword&quot;&gt;set&lt;/span&gt;: { newItem.&lt;span class=&quot;font-lock-builtin&quot;&gt;name&lt;/span&gt; = $0 }))
+                &lt;span class=&quot;font-lock-type&quot;&gt;Button&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Add&amp;quot;&lt;/span&gt;) {
+                    namedPhotos.&lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(newItem)
+                    currentNamedPhoto = &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt;
+                }
+            }
 &lt;span class=&quot;font-lock-comment-delimiter&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;font-lock-comment&quot;&gt; ...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;This approach also works effectively.&lt;/p&gt;</content>
 </entry>
@@ -543,14 +543,14 @@ Output: [2,1,4,3]&lt;/p&gt;
 <updated>2024-06-20T00:00:00+08:00</updated>
 <content type="html">&lt;p&gt;Consider the following class:&lt;/p&gt;
 &lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;LineCollector&lt;/span&gt;:
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;__init__&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, lines&lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt;[]):
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.&lt;span class=&quot;font-lock-variable-name&quot;&gt;lines&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; lines
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;__init__&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;lines&lt;/span&gt;=[]):
+        &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.&lt;span class=&quot;font-lock-variable-name&quot;&gt;lines&lt;/span&gt; = lines
 
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;collect&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, line):
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;collect&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;line&lt;/span&gt;):
         &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.lines.append(line)
 
-&lt;span class=&quot;font-lock-variable-name&quot;&gt;c1&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; LineCollector()
-&lt;span class=&quot;font-lock-variable-name&quot;&gt;c2&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; LineCollector()
+&lt;span class=&quot;font-lock-variable-name&quot;&gt;c1&lt;/span&gt; = &lt;span class=&quot;font-lock-type&quot;&gt;LineCollector&lt;/span&gt;()
+&lt;span class=&quot;font-lock-variable-name&quot;&gt;c2&lt;/span&gt; = &lt;span class=&quot;font-lock-type&quot;&gt;LineCollector&lt;/span&gt;()
 
 c1.collect(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Hi mom&amp;quot;&lt;/span&gt;)
 c2.collect(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Are you ok Annie?&amp;quot;&lt;/span&gt;)
@@ -562,29 +562,29 @@ c2.collect(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Are you ok A
 &lt;p&gt;Surprising right? As a programmer who are new to Python, I am very confused by this behavior. The mechanism behind it is:&lt;/p&gt;
 &lt;ol&gt;&lt;li&gt;Python evaluate the default value only once when it come across the def statement&lt;/li&gt;&lt;li&gt;Every subsequent call uses the same pre-evaluated default object.&lt;/li&gt;&lt;/ol&gt;
 &lt;p&gt;Someone mentioned that this behavior can actually be useful for capturing a variable’s value inside a loop:&lt;/p&gt;
-&lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-variable-name&quot;&gt;fs&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; []
-&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;range&lt;/span&gt;(10):
+&lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-variable-name&quot;&gt;fs&lt;/span&gt; = []
+&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; range(10):
     &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;():
         &lt;span class=&quot;font-lock-builtin&quot;&gt;print&lt;/span&gt;(i)
     fs.append(f)
 
-[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; f &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
+[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;It prints out 10 ‘9’s, with this feature, the following program print 0 to 9 correctly:&lt;/p&gt;
-&lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-variable-name&quot;&gt;fs&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; []
-&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;range&lt;/span&gt;(10):
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;(i&lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt;i):
+&lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-variable-name&quot;&gt;fs&lt;/span&gt; = []
+&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; range(10):
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt;=i):
         &lt;span class=&quot;font-lock-builtin&quot;&gt;print&lt;/span&gt;(i)
     fs.append(f)
 
-[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; f &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
+[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Alternatively, we can use a closure like this, though it’s a bit more complex:&lt;/p&gt;
-&lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-variable-name&quot;&gt;fs&lt;/span&gt; &lt;span class=&quot;font-lock-operator&quot;&gt;=&lt;/span&gt; []
-&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;range&lt;/span&gt;(10):
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;(i):
+&lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-variable-name&quot;&gt;fs&lt;/span&gt; = []
+&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; range(10):
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt;):
         &lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;lambda&lt;/span&gt;: (&lt;span class=&quot;font-lock-builtin&quot;&gt;print&lt;/span&gt;(i))
     fs.append(f(i))
 
-[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; f &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
+[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;This problem actually reminds me of the similar for loop variable capture problem in Go, which is fixed in Go 1.22 https://go.dev/blog/loopvar-preview&lt;/p&gt;</content>
 </entry>
 <entry>

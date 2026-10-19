@@ -205,11 +205,11 @@ I define an operation that involves inserting a certain number `⁠n` of element
 
 The results are as follows, where the x-axis represents the number of elements ⁠n (from 10 to 1500), and the y-axis represents the average time taken for operations at the current scale. It can be observed that the average time fluctuates in a sawtooth pattern as the scale increases. Each rising segment indicates that, under fixed storage size, the operation times increase as the number of elements stored in the Hash Table increases (indicating more collisions). When the threshold is reached, the space is expanded, and the average operation time drops accordingly.
 
-![average op time](/assets/images/244E2B0BC39A82FB57745536193C9312.png)
+![average op time](/assets/images/244E2B0BC39A82FB57745536193C9312.webp)
 
 Additionally, I calculated the amortized operation time. Similarly, the x-axis represents the input size, but the y-axis shows the average time taken for all operations up to that point. It can be seen that the amortized time complexity of the Hash Table indeed approaches O(1).
 
-![amortized op time](/assets/images/8AF2B7052E9543A14EF8DB5B4DBAC41F.png)
+![amortized op time](/assets/images/8AF2B7052E9543A14EF8DB5B4DBAC41F.webp)
 
 Through this implementation, I gained insights into some unique details of Hash Tables, such as the peculiarities of deletion in linear probing, the pros and cons of different collision resolution algorithms, and the actual time complexity of Hash Tables.
 

@@ -1,5 +1,164 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>&quot;Generic&quot; Vector in C From Scratch</title><meta property="og:title" content="&quot;Generic&quot; Vector in C From Scratch"><meta property="og:url" content="https://guiyuanju.github.io/generic-vector-in-c.html"><link rel="canonical" href="https://guiyuanju.github.io/generic-vector-in-c.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/assets/css/main.css"></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2026-02-02">2026-02-02</time></p><h1>&quot;Generic&quot; Vector in C From Scratch</h1><p><a href="https://github.com/guiyuanju/vector">github repo</a></p>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>&quot;Generic&quot; Vector in C From Scratch</title><meta property="og:title" content="&quot;Generic&quot; Vector in C From Scratch"><meta property="og:url" content="https://guiyuanju.github.io/generic-vector-in-c.html"><link rel="canonical" href="https://guiyuanju.github.io/generic-vector-in-c.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQAAAACFI5MzAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAB3YoTpAAAAAd0SU1FB+kLDxEQBIJn3qIAAAAoSURBVFjD7cmxCQAACMAw/39acVJ8wWQqNAJgy3bKcRzHcZzfBwBgFDd+HQ50ACyQAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDI1LTExLTE1VDE3OjE2OjA0KzAwOjAw0MxQwwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyNS0xMS0xNVQxNzoxNjowNCswMDowMKGR6H8AAAAodEVYdGRhdGU6dGltZXN0YW1wADIwMjUtMTEtMTVUMTc6MTY6MDQrMDA6MDD2hMmgAAAAAElFTkSuQmCC"><style>/* Modus Vivendi palette. */
+:root {
+  --bg-main: #000000;
+  --bg-dim: #1e1e1e;
+  --bg-inactive: #303030;
+  --bg-active: #535353;
+  --fg-main: #ffffff;
+  --fg-dim: #989898;
+  --fg-alt: #c6daff;
+  --blue: #2fafff;
+  --blue-warmer: #79a8ff;
+  --blue-cooler: #00bcff;
+  --blue-faint: #82b0ec;
+  --cyan: #00d3d0;
+  --cyan-cooler: #6ae4b9;
+  --cyan-faint: #9ac8e0;
+  --magenta: #feacd0;
+  --magenta-warmer: #f78fe7;
+  --magenta-cooler: #b6a0ff;
+  --yellow-faint: #d2b580;
+  --red-cooler: #ff7f9f;
+
+  --line: 1.5em;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 1ch var(--line);
+  background: var(--bg-main);
+  color: var(--fg-main);
+  font-family: "Sarasa Mono SC", "Sarasa Term SC", "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: var(--line);
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, figure {
+  margin: 0 0 var(--line);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+a { color: var(--blue-warmer); }
+a:visited { color: var(--magenta-cooler); }
+
+img { max-width: 100%; height: auto; }
+
+hr {
+  border: 0;
+  margin: 0 0 var(--line);
+}
+hr::before { content: "---"; color: var(--fg-dim); }
+
+/* Dired (home) */
+
+main > h1 {
+  margin: 0;
+  color: var(--fg-alt);
+}
+
+.dired { margin: 0; }
+.dired h2 {
+  margin: var(--line) 0 0;
+  color: var(--blue);
+}
+.dired ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dired .line {
+  display: flex;
+  gap: 1ch;
+  padding-left: 2ch;
+}
+.dired .name { white-space: pre; }
+.dired time, .dired .target, .dired .value { color: var(--fg-dim); flex: none; }
+.dired a { color: var(--fg-main); text-decoration: none; }
+.dired a:hover { text-decoration: underline; }
+
+/* Markdown (posts) */
+
+.back { color: var(--fg-dim); }
+
+.post-meta {
+  margin: 0;
+  color: var(--fg-dim);
+}
+
+article { max-width: 88ch; }
+
+article h1::before { content: "# "; }
+article h2::before { content: "## "; }
+article h3::before { content: "### "; }
+article h4::before { content: "#### "; }
+article h1::before, article h2::before, article h3::before,
+article h4::before { color: var(--fg-dim); }
+article h1 { color: var(--fg-main); }
+article h2 { color: var(--yellow-faint); }
+article h3 { color: var(--blue-faint); }
+article h4 { color: var(--magenta); }
+
+article ul { list-style: "- "; padding-left: 2ch; }
+article ol { padding-left: 3ch; }
+article li::marker { color: var(--fg-dim); }
+
+code { font-family: inherit; color: var(--cyan-cooler); }
+:not(pre) > code::before, :not(pre) > code::after {
+  content: "`";
+  color: var(--fg-dim);
+}
+
+pre {
+  overflow-x: auto;
+  background: var(--bg-dim);
+  padding: 0 1ch;
+}
+pre::before { content: "```" attr(data-lang); display: block; color: var(--fg-dim); }
+pre::after { content: "```"; display: block; color: var(--fg-dim); }
+pre code { color: var(--fg-main); }
+
+blockquote {
+  margin-left: 0;
+  padding-left: 1ch;
+  border-left: 1ch solid var(--bg-inactive);
+  color: var(--fg-alt);
+}
+
+table { border-collapse: collapse; }
+th, td {
+  border: 1px solid var(--bg-active);
+  padding: 0 1ch;
+  text-align: left;
+}
+
+/* Font-lock faces in code blocks, as Modus Vivendi colors them. */
+
+.font-lock-keyword { color: var(--magenta-cooler); }
+.font-lock-builtin { color: var(--magenta-warmer); }
+.font-lock-string { color: var(--blue-warmer); }
+.font-lock-doc { color: var(--cyan-faint); }
+.font-lock-comment, .font-lock-comment-delimiter { color: var(--fg-dim); }
+.font-lock-function-name, .font-lock-function-call { color: var(--magenta); }
+.font-lock-type { color: var(--cyan-cooler); }
+.font-lock-constant { color: var(--blue-cooler); }
+.font-lock-variable-name, .font-lock-property-name,
+.font-lock-property-use { color: var(--cyan); }
+.font-lock-preprocessor { color: var(--red-cooler); }
+.font-lock-escape { color: var(--magenta); }
+
+@media (max-width: 600px) {
+  .dired .target { display: none; }
+}
+</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2026-02-02">2026-02-02</time></p><h1>&quot;Generic&quot; Vector in C From Scratch</h1><p><a href="https://github.com/guiyuanju/vector">github repo</a></p>
 <p>A vector is a dynamically growable array allocated on heap, the concept is similar to <code>ArrayList</code> in Java or <code>slice</code> in Go (slice is actually a little different).</p>
 <p>C lacks such convenient data structure, but we can build one with an easy to use interface by ourselves.</p>
 <p>First define the Vec structure, a dynamic array should have a <code>len</code> indicating the actual length of data in the underlying storage, <code>cap</code> tells us the length of the storage, and <code>size</code> is quite interesting here, which represents the byte size of a single data element we store in this vector, because C doesn't have generic, and there is no type info during runtime, we need some way to know our type, so that we can retrieve the data from the bytes stored in storage using its byte size, and at last, we have the <code>data</code>, which is the underlying storage to store all our elements, in bytes.</p>

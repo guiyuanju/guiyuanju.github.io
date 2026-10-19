@@ -40,6 +40,12 @@
 (defvar blog--site nil
   "Plist read from site.el.")
 
+(defvar blog--css nil
+  "Contents of style.css, inlined into every page.")
+
+(defvar blog--icon nil
+  "static/logo.png as a data URI.")
+
 ;;;; HTML
 
 (defun blog--escape (string)
@@ -102,8 +108,12 @@
         (blog--escape ticks))))
    ((looking-at (concat "!\\[\\([^]]*\\)\\]" blog--link-target))
     (goto-char (match-end 0))
-    (blog--html `(img ((src . ,(or (match-string 2) (match-string 3)))
-                       (alt . ,(match-string 1))))))
+    (let* ((src (or (match-string 2) (match-string 3)))
+           (alt (match-string 1))
+           (size (blog--image-size src)))
+      (blog--html `(img ((src . ,src) (alt . ,alt)
+                         (width . ,(car size)) (height . ,(cadr size))
+                         (loading . "lazy"))))))
    ((looking-at (concat "\\[\\([^]]*\\)\\]" blog--link-target))
     (let ((href (or (match-string 2) (match-string 3)))
           (label (match-string 1)))
@@ -279,6 +289,32 @@ Return the index of the first line after the list."
             (mapconcat (lambda (cells) (row "td" cells)) rows "")
             "</tbody></table>")))
 
+;;;; Images
+
+(defun blog--webp-size (file)
+  "Width and height of the WebP FILE as strings, or nil."
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert-file-contents-literally file nil 0 30)
+    (cl-flet ((b (n) (char-after (1+ n))))
+      (mapcar
+       #'number-to-string
+       (pcase (buffer-substring 13 17)
+         ("VP8L" (list (1+ (logior (b 21) (ash (logand (b 22) #x3f) 8)))
+                       (1+ (logior (ash (b 22) -6) (ash (b 23) 2)
+                                   (ash (logand (b 24) #xf) 10)))))
+         ("VP8X" (list (1+ (logior (b 24) (ash (b 25) 8) (ash (b 26) 16)))
+                       (1+ (logior (b 27) (ash (b 28) 8) (ash (b 29) 16)))))
+         ("VP8 " (list (logand (logior (b 26) (ash (b 27) 8)) #x3fff)
+                       (logand (logior (b 28) (ash (b 29) 8)) #x3fff))))))))
+
+(defun blog--image-size (src)
+  "Width and height of the image at SRC if it is a WebP file in static/."
+  (let ((file (expand-file-name (concat "static" src) blog-root)))
+    (when (and (string-prefix-p "/" src) (string-suffix-p ".webp" src)
+               (file-regular-p file))
+      (blog--webp-size file))))
+
 ;;;; Code highlighting with font-lock
 
 (defun blog--code-mode (lang)
@@ -303,6 +339,13 @@ Return the index of the first line after the list."
             (unless (eq parent 'unspecified)
               (blog--face-class parent))))))))
 
+(defun blog--styled-class (face)
+  "The class for FACE if style.css colors it, else nil."
+  (let ((class (blog--face-class face)))
+    (and class
+         (string-match-p (concat "\\." (regexp-quote class) "[^a-z-]") blog--css)
+         class)))
+
 (defun blog--fontify (code mode)
   "CODE as HTML, each face run a <span> classed by its font-lock face."
   (with-temp-buffer
@@ -313,11 +356,15 @@ Return the index of the first line after the list."
     (let ((pos (point-min))
           out)
       (while (< pos (point-max))
-        (let* ((next (next-single-property-change pos 'face nil (point-max)))
-               (class (blog--face-class (get-text-property pos 'face)))
-               (text (blog--escape (buffer-substring-no-properties pos next))))
-          (push (if class (format "<span class=\"%s\">%s</span>" class text) text)
-                out)
+        (let ((class (blog--styled-class (get-text-property pos 'face)))
+              (next pos))
+          ;; Neighboring faces that end up with the same class share one span.
+          (while (and (< next (point-max))
+                      (equal class (blog--styled-class (get-text-property next 'face))))
+            (setq next (next-single-property-change next 'face nil (point-max))))
+          (let ((text (blog--escape (buffer-substring-no-properties pos next))))
+            (push (if class (format "<span class=\"%s\">%s</span>" class text) text)
+                  out))
           (setq pos next)))
       (apply #'concat (nreverse out)))))
 
@@ -389,8 +436,8 @@ Return the index of the first line after the list."
                  (link ((rel . "canonical") (href . ,(blog--absolute-url path))))
                  (link ((rel . "alternate") (type . "application/atom+xml")
                         (title . ,(blog--site :title)) (href . "/feed.xml")))
-                 (link ((rel . "icon") (href . "/logo.png")))
-                 (link ((rel . "stylesheet") (href . "/assets/css/main.css"))))
+                 (link ((rel . "icon") (href . ,blog--icon)))
+                 (style () (raw ,blog--css)))
            (body ()
                  (main () ,@body)
                  ,(when-let* ((code (blog--site :goatcounter)))
@@ -485,6 +532,15 @@ Return the index of the first line after the list."
   "Generate the site into docs/, replacing it."
   (interactive)
   (let* ((blog--site (car (blog--read-file (expand-file-name "site.el" blog-root))))
+         (blog--css (with-temp-buffer
+                      (insert-file-contents (expand-file-name "style.css" blog-root))
+                      (buffer-string)))
+         (blog--icon (with-temp-buffer
+                       (set-buffer-multibyte nil)
+                       (insert-file-contents-literally
+                        (expand-file-name "static/logo.png" blog-root))
+                       (concat "data:image/png;base64,"
+                               (base64-encode-string (buffer-string) t))))
          (posts (blog--read-posts))
          (out (expand-file-name "docs/" blog-root)))
     (when (file-directory-p out)
@@ -508,7 +564,7 @@ Return the index of the first line after the list."
 (defconst blog--content-types
   '(("html" . "text/html; charset=utf-8") ("css" . "text/css")
     ("xml" . "application/atom+xml") ("png" . "image/png")
-    ("jpg" . "image/jpeg") ("svg" . "image/svg+xml")))
+    ("jpg" . "image/jpeg") ("webp" . "image/webp") ("svg" . "image/svg+xml")))
 
 (defun blog--preview-filter (proc request)
   "Answer one GET REQUEST on PROC with a file from docs/."

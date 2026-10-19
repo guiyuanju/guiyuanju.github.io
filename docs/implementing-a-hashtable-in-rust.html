@@ -1,5 +1,164 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>HashTable in Rust from Scratch</title><meta property="og:title" content="HashTable in Rust from Scratch"><meta property="og:url" content="https://guiyuanju.github.io/implementing-a-hashtable-in-rust.html"><link rel="canonical" href="https://guiyuanju.github.io/implementing-a-hashtable-in-rust.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/assets/css/main.css"></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-08-18">2025-08-18</time></p><h1>HashTable in Rust from Scratch</h1><p><a href="https://github.com/guiyuanju/hash_table_in_rust">Link for Code</a></p>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>HashTable in Rust from Scratch</title><meta property="og:title" content="HashTable in Rust from Scratch"><meta property="og:url" content="https://guiyuanju.github.io/implementing-a-hashtable-in-rust.html"><link rel="canonical" href="https://guiyuanju.github.io/implementing-a-hashtable-in-rust.html"><link rel="alternate" type="application/atom+xml" title="M-x k" href="/feed.xml"><link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQAAAACFI5MzAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAB3YoTpAAAAAd0SU1FB+kLDxEQBIJn3qIAAAAoSURBVFjD7cmxCQAACMAw/39acVJ8wWQqNAJgy3bKcRzHcZzfBwBgFDd+HQ50ACyQAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDI1LTExLTE1VDE3OjE2OjA0KzAwOjAw0MxQwwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyNS0xMS0xNVQxNzoxNjowNCswMDowMKGR6H8AAAAodEVYdGRhdGU6dGltZXN0YW1wADIwMjUtMTEtMTVUMTc6MTY6MDQrMDA6MDD2hMmgAAAAAElFTkSuQmCC"><style>/* Modus Vivendi palette. */
+:root {
+  --bg-main: #000000;
+  --bg-dim: #1e1e1e;
+  --bg-inactive: #303030;
+  --bg-active: #535353;
+  --fg-main: #ffffff;
+  --fg-dim: #989898;
+  --fg-alt: #c6daff;
+  --blue: #2fafff;
+  --blue-warmer: #79a8ff;
+  --blue-cooler: #00bcff;
+  --blue-faint: #82b0ec;
+  --cyan: #00d3d0;
+  --cyan-cooler: #6ae4b9;
+  --cyan-faint: #9ac8e0;
+  --magenta: #feacd0;
+  --magenta-warmer: #f78fe7;
+  --magenta-cooler: #b6a0ff;
+  --yellow-faint: #d2b580;
+  --red-cooler: #ff7f9f;
+
+  --line: 1.5em;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 1ch var(--line);
+  background: var(--bg-main);
+  color: var(--fg-main);
+  font-family: "Sarasa Mono SC", "Sarasa Term SC", "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: var(--line);
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, figure {
+  margin: 0 0 var(--line);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+a { color: var(--blue-warmer); }
+a:visited { color: var(--magenta-cooler); }
+
+img { max-width: 100%; height: auto; }
+
+hr {
+  border: 0;
+  margin: 0 0 var(--line);
+}
+hr::before { content: "---"; color: var(--fg-dim); }
+
+/* Dired (home) */
+
+main > h1 {
+  margin: 0;
+  color: var(--fg-alt);
+}
+
+.dired { margin: 0; }
+.dired h2 {
+  margin: var(--line) 0 0;
+  color: var(--blue);
+}
+.dired ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dired .line {
+  display: flex;
+  gap: 1ch;
+  padding-left: 2ch;
+}
+.dired .name { white-space: pre; }
+.dired time, .dired .target, .dired .value { color: var(--fg-dim); flex: none; }
+.dired a { color: var(--fg-main); text-decoration: none; }
+.dired a:hover { text-decoration: underline; }
+
+/* Markdown (posts) */
+
+.back { color: var(--fg-dim); }
+
+.post-meta {
+  margin: 0;
+  color: var(--fg-dim);
+}
+
+article { max-width: 88ch; }
+
+article h1::before { content: "# "; }
+article h2::before { content: "## "; }
+article h3::before { content: "### "; }
+article h4::before { content: "#### "; }
+article h1::before, article h2::before, article h3::before,
+article h4::before { color: var(--fg-dim); }
+article h1 { color: var(--fg-main); }
+article h2 { color: var(--yellow-faint); }
+article h3 { color: var(--blue-faint); }
+article h4 { color: var(--magenta); }
+
+article ul { list-style: "- "; padding-left: 2ch; }
+article ol { padding-left: 3ch; }
+article li::marker { color: var(--fg-dim); }
+
+code { font-family: inherit; color: var(--cyan-cooler); }
+:not(pre) > code::before, :not(pre) > code::after {
+  content: "`";
+  color: var(--fg-dim);
+}
+
+pre {
+  overflow-x: auto;
+  background: var(--bg-dim);
+  padding: 0 1ch;
+}
+pre::before { content: "```" attr(data-lang); display: block; color: var(--fg-dim); }
+pre::after { content: "```"; display: block; color: var(--fg-dim); }
+pre code { color: var(--fg-main); }
+
+blockquote {
+  margin-left: 0;
+  padding-left: 1ch;
+  border-left: 1ch solid var(--bg-inactive);
+  color: var(--fg-alt);
+}
+
+table { border-collapse: collapse; }
+th, td {
+  border: 1px solid var(--bg-active);
+  padding: 0 1ch;
+  text-align: left;
+}
+
+/* Font-lock faces in code blocks, as Modus Vivendi colors them. */
+
+.font-lock-keyword { color: var(--magenta-cooler); }
+.font-lock-builtin { color: var(--magenta-warmer); }
+.font-lock-string { color: var(--blue-warmer); }
+.font-lock-doc { color: var(--cyan-faint); }
+.font-lock-comment, .font-lock-comment-delimiter { color: var(--fg-dim); }
+.font-lock-function-name, .font-lock-function-call { color: var(--magenta); }
+.font-lock-type { color: var(--cyan-cooler); }
+.font-lock-constant { color: var(--blue-cooler); }
+.font-lock-variable-name, .font-lock-property-name,
+.font-lock-property-use { color: var(--cyan); }
+.font-lock-preprocessor { color: var(--red-cooler); }
+.font-lock-escape { color: var(--magenta); }
+
+@media (max-width: 600px) {
+  .dired .target { display: none; }
+}
+</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-08-18">2025-08-18</time></p><h1>HashTable in Rust from Scratch</h1><p><a href="https://github.com/guiyuanju/hash_table_in_rust">Link for Code</a></p>
 <p>Recently, I wanted to revisit Rust, and while following along with the book <em>Crafting Interpreters</em>, I came across the chapter on implementing a Hash Table. I discovered many interesting details about Hash Table implementations, which inspired me to write this blog post. I will implement a Hash Table using Rust and conduct some possibly non-standard benchmarks.</p>
 <p>A Hash Table typically consists of two main components:</p>
 <ol><li>A hash function</li><li>A collision resolution strategy, commonly including:
@@ -18,10 +177,10 @@ b. Linear probing</li></ol>
 
 <span class="font-lock-keyword">impl</span> <span class="font-lock-type">Key</span> {
     <span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">new</span>(<span class="font-lock-variable-name">name</span>: &amp;<span class="font-lock-type">str</span>) -&gt; <span class="font-lock-type">Self</span> {
-        <span class="font-lock-keyword">let</span> <span class="font-lock-keyword">mut</span> <span class="font-lock-variable-name">hash</span>: <span class="font-lock-type">u32</span> = <span class="font-lock-number">2166136261u32</span>;
+        <span class="font-lock-keyword">let</span> <span class="font-lock-keyword">mut</span> <span class="font-lock-variable-name">hash</span>: <span class="font-lock-type">u32</span> = 2166136261u32;
         <span class="font-lock-keyword">for</span> &amp;<span class="font-lock-variable-name">b</span> <span class="font-lock-keyword">in</span> name.as_bytes() {
             <span class="font-lock-variable-name">hash</span> ^= b <span class="font-lock-keyword">as</span> <span class="font-lock-type">u32</span>;
-            <span class="font-lock-variable-name">hash</span> = hash.wrapping_mul(<span class="font-lock-number">16777619</span>);
+            <span class="font-lock-variable-name">hash</span> = hash.wrapping_mul(16777619);
         }
 
         <span class="font-lock-type">Self</span> {
@@ -81,13 +240,13 @@ b. Linear probing</li></ol>
             }
         }
 
-        <span class="font-lock-variable-name">index</span> = (index + <span class="font-lock-number">1</span>) % entries.len();
+        <span class="font-lock-variable-name">index</span> = (index + 1) % entries.len();
     }
 }</code></pre>
 <p>Next, we will implement the lookup operation ⁠get. Since we already have ⁠find_entry, implementing the lookup becomes very straightforward.</p>
 <pre data-lang="rust"><code><span class="font-lock-keyword">impl</span> <span class="font-lock-type">Table</span> {
     <span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">get</span>(&amp;<span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">key</span>: &amp;<span class="font-lock-type">Key</span>) -&gt; <span class="font-lock-type">Option</span>&lt;<span class="font-lock-type">Value</span>&gt; {
-        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">self</span>.entries.len() == <span class="font-lock-number">0</span> {
+        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">self</span>.entries.len() == 0 {
             <span class="font-lock-keyword">return</span> <span class="font-lock-type">None</span>;
         }
 
@@ -106,12 +265,12 @@ b. Linear probing</li></ol>
     <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">adjust_capacity</span>(&amp;<span class="font-lock-keyword">mut</span> <span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">capacity</span>: <span class="font-lock-type">usize</span>) {
         <span class="font-lock-keyword">let</span> <span class="font-lock-keyword">mut</span> <span class="font-lock-variable-name">entries</span>: <span class="font-lock-type">Vec</span>&lt;<span class="font-lock-type">Entry</span>&gt; = <span class="font-lock-builtin">vec</span>![<span class="font-lock-type">Entry</span>::<span class="font-lock-type">None</span>; capacity];
 
-        <span class="font-lock-keyword">self</span>.count = <span class="font-lock-number">0</span>;
+        <span class="font-lock-keyword">self</span>.count = 0;
         <span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">e</span> <span class="font-lock-keyword">in</span> &amp;<span class="font-lock-keyword">self</span>.entries {
             <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> <span class="font-lock-type">Entry</span>::<span class="font-lock-type">KeyValue</span>(<span class="font-lock-variable-name">entry</span>) = e {
                 <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">let</span> <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Available</span>(<span class="font-lock-variable-name">index</span>) = find_entry(&amp;<span class="font-lock-keyword">mut</span> entries, &amp;entry.key) {
                     <span class="font-lock-variable-name">entries</span>[<span class="font-lock-variable-name">index</span>] = <span class="font-lock-type">Entry</span>::<span class="font-lock-type">KeyValue</span>(entry.clone());
-                    <span class="font-lock-keyword">self</span>.count += <span class="font-lock-number">1</span>
+                    <span class="font-lock-keyword">self</span>.count += 1
                 }
             }
         }
@@ -121,14 +280,14 @@ b. Linear probing</li></ol>
 }</code></pre>
 <p>With ⁠adjust_capacity implemented, we can now implement the ⁠set operation. First, we check whether inserting will exceed the load threshold. If it does, we expand the space (I arbitrarily chose a strategy: if the length is less than 8, expand it to 8 directly; otherwise, double the current length). Then, we use ⁠find_entry to determine the index where we can insert the key. If ⁠Found is returned, it means the key already exists, so we update it; if ⁠Available is returned, it means the key does not exist, and there is an empty slot available, so we increment the element count ⁠count and insert the new entry; if ⁠Tombstone is returned, we treat the tombstone as an existing element and do not increment ⁠count. This is crucial because if we do not consider the tombstone as an existing element, when the array is filled with tombstones and no empty slots remain, ⁠find_entry could enter an infinite loop.</p>
 <pre data-lang="rust"><code><span class="font-lock-keyword">impl</span> <span class="font-lock-type">Table</span> {
-    <span class="font-lock-keyword">const</span> <span class="font-lock-type">MAX_LOAD</span>: <span class="font-lock-type">f32</span> = <span class="font-lock-number">0.75</span>;
+    <span class="font-lock-keyword">const</span> <span class="font-lock-type">MAX_LOAD</span>: <span class="font-lock-type">f32</span> = 0.75;
 
     <span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">set</span>(&amp;<span class="font-lock-keyword">mut</span> <span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">key</span>: &amp;<span class="font-lock-type">Key</span>, <span class="font-lock-variable-name">value</span>: &amp;<span class="font-lock-type">Value</span>) {
-        <span class="font-lock-keyword">if</span> (<span class="font-lock-keyword">self</span>.count + <span class="font-lock-number">1</span>) <span class="font-lock-keyword">as</span> <span class="font-lock-type">f32</span> &gt; <span class="font-lock-type">Self</span>::<span class="font-lock-type">MAX_LOAD</span> * <span class="font-lock-keyword">self</span>.entries.len() <span class="font-lock-keyword">as</span> <span class="font-lock-type">f32</span> {
-            <span class="font-lock-keyword">let</span> <span class="font-lock-variable-name">capacity</span> = <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">self</span>.entries.len() &lt; <span class="font-lock-number">8</span> {
-                <span class="font-lock-number">8</span>
+        <span class="font-lock-keyword">if</span> (<span class="font-lock-keyword">self</span>.count + 1) <span class="font-lock-keyword">as</span> <span class="font-lock-type">f32</span> &gt; <span class="font-lock-type">Self</span>::<span class="font-lock-type">MAX_LOAD</span> * <span class="font-lock-keyword">self</span>.entries.len() <span class="font-lock-keyword">as</span> <span class="font-lock-type">f32</span> {
+            <span class="font-lock-keyword">let</span> <span class="font-lock-variable-name">capacity</span> = <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">self</span>.entries.len() &lt; 8 {
+                8
             } <span class="font-lock-keyword">else</span> {
-                <span class="font-lock-keyword">self</span>.entries.len() * <span class="font-lock-number">2</span>
+                <span class="font-lock-keyword">self</span>.entries.len() * 2
             };
 
             <span class="font-lock-keyword">self</span>.adjust_capacity(capacity);
@@ -137,7 +296,7 @@ b. Linear probing</li></ol>
         <span class="font-lock-keyword">let</span> <span class="font-lock-variable-name">index</span> = <span class="font-lock-keyword">match</span> find_entry(&amp;<span class="font-lock-keyword">self</span>.entries, &amp;key) {
             <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Found</span>(<span class="font-lock-variable-name">index</span>) =&gt; index,
             <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Available</span>(<span class="font-lock-variable-name">index</span>) =&gt; {
-                <span class="font-lock-keyword">self</span>.count += <span class="font-lock-number">1</span>;
+                <span class="font-lock-keyword">self</span>.count += 1;
                 index
             }
             <span class="font-lock-type">FindResult</span>::<span class="font-lock-type">Tombstone</span>(<span class="font-lock-variable-name">index</span>) =&gt; index,
@@ -151,7 +310,7 @@ b. Linear probing</li></ol>
 <p>With the tombstone mechanism in place, implementing the delete operation becomes quite simple; we just replace the corresponding element with a tombstone.</p>
 <pre data-lang="rust"><code><span class="font-lock-keyword">impl</span> <span class="font-lock-type">Table</span> {
 	<span class="font-lock-keyword">pub</span> <span class="font-lock-keyword">fn</span> <span class="font-lock-function-name">delete</span>(&amp;<span class="font-lock-keyword">mut</span> <span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">key</span>: &amp;<span class="font-lock-type">Key</span>) {
-        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">self</span>.count == <span class="font-lock-number">0</span> {
+        <span class="font-lock-keyword">if</span> <span class="font-lock-keyword">self</span>.count == 0 {
             <span class="font-lock-keyword">return</span>;
         }
 
@@ -163,8 +322,8 @@ b. Linear probing</li></ol>
 <p>Now, we have a complete and functional Hash Table implementation. Let’s perform some benchmarks.</p>
 <p>I define an operation that involves inserting a certain number <code>⁠n</code> of elements, then deleting <code>⁠n/10</code> of those elements, and finally querying ⁠<code>n*200</code> times to calculate the average time taken for each operation.</p>
 <p>The results are as follows, where the x-axis represents the number of elements ⁠n (from 10 to 1500), and the y-axis represents the average time taken for operations at the current scale. It can be observed that the average time fluctuates in a sawtooth pattern as the scale increases. Each rising segment indicates that, under fixed storage size, the operation times increase as the number of elements stored in the Hash Table increases (indicating more collisions). When the threshold is reached, the space is expanded, and the average operation time drops accordingly.</p>
-<p><img src="/assets/images/244E2B0BC39A82FB57745536193C9312.png" alt="average op time"></p>
+<p><img src="/assets/images/244E2B0BC39A82FB57745536193C9312.webp" alt="average op time" width="640" height="480" loading="lazy"></p>
 <p>Additionally, I calculated the amortized operation time. Similarly, the x-axis represents the input size, but the y-axis shows the average time taken for all operations up to that point. It can be seen that the amortized time complexity of the Hash Table indeed approaches O(1).</p>
-<p><img src="/assets/images/8AF2B7052E9543A14EF8DB5B4DBAC41F.png" alt="amortized op time"></p>
+<p><img src="/assets/images/8AF2B7052E9543A14EF8DB5B4DBAC41F.webp" alt="amortized op time" width="640" height="480" loading="lazy"></p>
 <p>Through this implementation, I gained insights into some unique details of Hash Tables, such as the peculiarities of deletion in linear probing, the pros and cons of different collision resolution algorithms, and the actual time complexity of Hash Tables.</p>
 <p>There are many more aspects to discuss regarding Hash Tables, such as comparing the performance of different hash functions, empirically comparing the performance differences of various collision solving algorithms, and exploring algorithmic performance beyond the tombstone mechanism in linear probing. These topics are left for future exploration.</p></article></main></body></html>
