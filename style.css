@@ -117,6 +117,7 @@ code { font-family: inherit; color: var(--cyan-cooler); }
 }
 
 pre {
+  font-family: inherit;
   overflow-x: auto;
   background: var(--bg-dim);
   padding: 0 1ch;
