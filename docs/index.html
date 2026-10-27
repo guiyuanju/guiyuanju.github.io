@@ -158,4 +158,46 @@ th, td {
 @media (max-width: 600px) {
   .dired .target { display: none; }
 }
+
+/* Paper: black on white, fixed point sizes, no screen-only chrome. */
+
+.print-only { display: none; }
+
+@media print {
+  :root { color-scheme: light; }
+  body {
+    padding: 0;
+    background: white;
+    color: black;
+    font-size: 12pt;
+  }
+  .back { display: none; }
+  .print-only { display: inline; }
+  article { max-width: none; }
+  article h1 { font-size: 16pt; }
+  article h2 { font-size: 14pt; }
+  article h3, article h4 { font-size: 13pt; }
+  h1, h2, h3, h4 { break-after: avoid; }
+  main > h1, .dired h2, article h1, article h2, article h3, article h4,
+  blockquote, code, pre code, .font-lock-keyword, .font-lock-builtin,
+  .font-lock-string, .font-lock-function-name, .font-lock-function-call,
+  .font-lock-type, .font-lock-constant, .font-lock-variable-name,
+  .font-lock-property-name, .font-lock-property-use, .font-lock-preprocessor,
+  .font-lock-escape { color: black; }
+  .post-meta, .dired time, .dired .target, .dired .value, hr::before,
+  article h1::before, article h2::before, article h3::before,
+  article h4::before, li::marker, :not(pre) > code::before,
+  :not(pre) > code::after, pre::before, pre::after, .font-lock-doc,
+  .font-lock-comment, .font-lock-comment-delimiter { color: #555; }
+  a, a:visited { color: black !important; }
+  pre {
+    background: none;
+    border: 1pt solid black;
+    font-size: 11pt;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  blockquote { border-left-color: #ccc; }
+  th, td { border-color: black; }
+}
 </style></head><body><main><h1>M-x k</h1><section class="dired"><h2>~/info:</h2><ul><li class="line"><a href="https://github.com/guiyuanju">github</a><span class="target">-&gt; github.com/guiyuanju</span></li><li class="line"><span class="name">tools </span><span class="value">emacs ai</span></li></ul></section><section class="dired"><h2>~/posts:</h2><ul><li class="line"><time datetime="2026-02-02">2026-02-02</time><a href="/generic-vector-in-c.html">&quot;Generic&quot; Vector in C From Scratch</a></li><li class="line"><time datetime="2025-12-24">2025-12-24</time><a href="/lambda-calculus-interpreter.html">Lambda Calculus Interpreter</a></li><li class="line"><time datetime="2025-08-18">2025-08-18</time><a href="/implementing-a-hashtable-in-rust.html">HashTable in Rust from Scratch</a></li><li class="line"><time datetime="2025-05-20">2025-05-20</time><a href="/leetcode-496-next-greater-element-i.html">Improve Performance Greatly By Eliminating Branches</a></li><li class="line"><time datetime="2025-04-29">2025-04-29</time><a href="/crafting-interpreters.html">Book Reading: Crafting Interpreters</a></li><li class="line"><time datetime="2025-03-28">2025-03-28</time><a href="/swiftui-changes-to-unused-state-variables-in-the-body-may-be-ignored.html">SwiftUI Ignores Unused State Variables</a></li><li class="line"><time datetime="2025-03-12">2025-03-12</time><a href="/leetcode-24-swap-nodes-in-pairs.html">Swap Nodes in Pairs -- Iterative vs Recursive</a></li><li class="line"><time datetime="2024-06-20">2024-06-20</time><a href="/python-default-parameters.html">Default Parameters in Python</a></li><li class="line"><time datetime="2023-02-22">2023-02-22</time><a href="/expression-problem.html">Expression Problem</a></li></ul></section><section class="dired"><h2>~/books:</h2><ul><li class="line"><span class="name">A Pale View of Hills    </span><span class="value">read</span></li><li class="line"><span class="name">The Agony of Eros       </span><span class="value">read</span></li><li class="line"><span class="name">Japan: A Modern History </span><span class="value">read</span></li><li class="line"><span class="name">Never Let Me Go         </span><span class="value">read</span></li></ul></section><section class="dired"><h2>~/projects:</h2><ul><li class="line"><a href="https://github.com/guiyuanju/golisp">golisp</a><span class="target">-&gt; github.com/guiyuanju/golisp</span></li><li class="line"><a href="https://github.com/guiyuanju/mossdb">mossdb</a><span class="target">-&gt; github.com/guiyuanju/mossdb</span></li><li class="line"><a href="https://github.com/guiyuanju/lamb">lamb</a><span class="target">-&gt; github.com/guiyuanju/lamb</span></li><li class="line"><a href="https://github.com/guiyuanju/nn">nn</a><span class="target">-&gt; github.com/guiyuanju/nn</span></li><li class="line"><a href="https://github.com/guiyuanju/painting">painting</a><span class="target">-&gt; github.com/guiyuanju/painting</span></li><li class="line"><a href="https://github.com/guiyuanju/blockmepls">blockmepls</a><span class="target">-&gt; github.com/guiyuanju/blockmepls</span></li></ul></section></main></body></html>

@@ -158,7 +158,49 @@ th, td {
 @media (max-width: 600px) {
   .dired .target { display: none; }
 }
-</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-04-29">2025-04-29</time></p><h1>Book Reading: Crafting Interpreters</h1><p>I’ve been reading <a href="https://craftinginterpreters.com">Crafting Interpreters</a> on and off for a long time, and I finally finished it tonight—what a wonderful journey! I highly recommend it to anyone interested in learning how interpreters and compilers are implemented.</p>
+
+/* Paper: black on white, fixed point sizes, no screen-only chrome. */
+
+.print-only { display: none; }
+
+@media print {
+  :root { color-scheme: light; }
+  body {
+    padding: 0;
+    background: white;
+    color: black;
+    font-size: 12pt;
+  }
+  .back { display: none; }
+  .print-only { display: inline; }
+  article { max-width: none; }
+  article h1 { font-size: 16pt; }
+  article h2 { font-size: 14pt; }
+  article h3, article h4 { font-size: 13pt; }
+  h1, h2, h3, h4 { break-after: avoid; }
+  main > h1, .dired h2, article h1, article h2, article h3, article h4,
+  blockquote, code, pre code, .font-lock-keyword, .font-lock-builtin,
+  .font-lock-string, .font-lock-function-name, .font-lock-function-call,
+  .font-lock-type, .font-lock-constant, .font-lock-variable-name,
+  .font-lock-property-name, .font-lock-property-use, .font-lock-preprocessor,
+  .font-lock-escape { color: black; }
+  .post-meta, .dired time, .dired .target, .dired .value, hr::before,
+  article h1::before, article h2::before, article h3::before,
+  article h4::before, li::marker, :not(pre) > code::before,
+  :not(pre) > code::after, pre::before, pre::after, .font-lock-doc,
+  .font-lock-comment, .font-lock-comment-delimiter { color: #555; }
+  a, a:visited { color: black !important; }
+  pre {
+    background: none;
+    border: 1pt solid black;
+    font-size: 11pt;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  blockquote { border-left-color: #ccc; }
+  th, td { border-color: black; }
+}
+</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-04-29">2025-04-29</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/crafting-interpreters.html</span></p><h1>Book Reading: Crafting Interpreters</h1><p>I’ve been reading <a href="https://craftinginterpreters.com">Crafting Interpreters</a> on and off for a long time, and I finally finished it tonight—what a wonderful journey! I highly recommend it to anyone interested in learning how interpreters and compilers are implemented.</p>
 <p>The book walks you through building a tree-walk interpreter (in Java) and a single-pass compiler that generates bytecode for a stack-based virtual machine (in C)—all coded by hand!</p>
 <p>It took me over 40 hours (and a bit of pain) to complete the book, especially during the compiler implementation. So take your time and be patient—it’s worth it.</p>
 <ul><li><a href="https://github.com/guiyuanju/jlox">Lox implementation in Java</a></li><li><a href="https://github.com/guiyuanju/clox">Lox implementation in C</a></li></ul></article></main></body></html>

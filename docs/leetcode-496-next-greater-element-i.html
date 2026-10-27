@@ -158,7 +158,49 @@ th, td {
 @media (max-width: 600px) {
   .dired .target { display: none; }
 }
-</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-05-20">2025-05-20</time></p><h1>Improve Performance Greatly By Eliminating Branches</h1><h2>Problem</h2>
+
+/* Paper: black on white, fixed point sizes, no screen-only chrome. */
+
+.print-only { display: none; }
+
+@media print {
+  :root { color-scheme: light; }
+  body {
+    padding: 0;
+    background: white;
+    color: black;
+    font-size: 12pt;
+  }
+  .back { display: none; }
+  .print-only { display: inline; }
+  article { max-width: none; }
+  article h1 { font-size: 16pt; }
+  article h2 { font-size: 14pt; }
+  article h3, article h4 { font-size: 13pt; }
+  h1, h2, h3, h4 { break-after: avoid; }
+  main > h1, .dired h2, article h1, article h2, article h3, article h4,
+  blockquote, code, pre code, .font-lock-keyword, .font-lock-builtin,
+  .font-lock-string, .font-lock-function-name, .font-lock-function-call,
+  .font-lock-type, .font-lock-constant, .font-lock-variable-name,
+  .font-lock-property-name, .font-lock-property-use, .font-lock-preprocessor,
+  .font-lock-escape { color: black; }
+  .post-meta, .dired time, .dired .target, .dired .value, hr::before,
+  article h1::before, article h2::before, article h3::before,
+  article h4::before, li::marker, :not(pre) > code::before,
+  :not(pre) > code::after, pre::before, pre::after, .font-lock-doc,
+  .font-lock-comment, .font-lock-comment-delimiter { color: #555; }
+  a, a:visited { color: black !important; }
+  pre {
+    background: none;
+    border: 1pt solid black;
+    font-size: 11pt;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  blockquote { border-left-color: #ccc; }
+  th, td { border-color: black; }
+}
+</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-05-20">2025-05-20</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/leetcode-496-next-greater-element-i.html</span></p><h1>Improve Performance Greatly By Eliminating Branches</h1><h2>Problem</h2>
 <p>The next greater element of some element <code>x</code> in an array is the first greater element that is to the right of <code>x</code> in the same array.</p>
 <p>You are given two distinct 0-indexed integer arrays <code>nums1</code> and <code>nums2</code>, where <code>nums1</code> is a subset of <code>nums2</code>.</p>
 <p>For each <code>0 &lt;= i &lt; nums1.length</code>, find the index <code>j</code> such that <code>nums1[i] == nums2[j]</code> and determine the next greater element of <code>nums2[j]</code> in <code>nums2</code>. If there is no next greater element, then the answer for this query is -1.</p>

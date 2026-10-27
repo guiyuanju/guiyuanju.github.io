@@ -493,7 +493,10 @@ Return the index of the first line after the list."
                 (article ()
                          (p ((class . "post-meta"))
                             (time ((datetime . ,(plist-get post :date)))
-                                  ,(plist-get post :date)))
+                                  ,(plist-get post :date))
+                            (span ((class . "print-only"))
+                                  ,(format " · %s · %s" (blog--site :author)
+                                           (blog--absolute-url (blog--post-url post)))))
                          (h1 () ,(plist-get post :title))
                          (raw ,(plist-get post :html))))))
 

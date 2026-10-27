@@ -391,60 +391,60 @@ structure of modern CPU.&lt;/p&gt;</content>
 <updated>2025-03-28T00:00:00+08:00</updated>
 <content type="html">&lt;p&gt;This issue arose from a project I was working on for the “100 Days of SwiftUI” challenge. The application allows users to select a photo from their library and assign a name to it. While it's a simple app, it presented a puzzling challenge.&lt;/p&gt;
 &lt;p&gt;Below is the initial version of the code I attempted. It failed at an unexpected point—can you identify the issue?&lt;/p&gt;
-&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;SwiftUI&lt;/span&gt;
-&lt;span class=&quot;font-lock-keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;PhotosUI&lt;/span&gt;
+&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;import SwiftUI
+import PhotosUI
 
-&lt;span class=&quot;font-lock-keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;ContentView&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; namedPhotos: [&lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;] = []
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; pickerItem: &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPickerItem&lt;/span&gt;?
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; currentNamedPhoto: &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;? = &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt;
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; isAskNamePresented = &lt;span class=&quot;font-lock-constant&quot;&gt;false&lt;/span&gt;
+struct ContentView: View {
+    @State private var namedPhotos: [NamedPhoto] = []
+    @State private var pickerItem: PhotosPickerItem?
+    @State private var currentNamedPhoto: NamedPhoto? = nil
+    @State private var isAskNamePresented = false
 
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; body: &lt;span class=&quot;font-lock-keyword&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
-        &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPicker&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Select a photo&amp;quot;&lt;/span&gt;, selection: $pickerItem, matching: .&lt;span class=&quot;font-lock-property-use&quot;&gt;images&lt;/span&gt;)
-            .&lt;span class=&quot;font-lock-function-call&quot;&gt;onChange&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;of&lt;/span&gt;: pickerItem) {_, newItem &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
-                &lt;span class=&quot;font-lock-type&quot;&gt;Task&lt;/span&gt; {
-                    &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; data = &lt;span class=&quot;font-lock-keyword&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;await&lt;/span&gt; newItem?.&lt;span class=&quot;font-lock-function-call&quot;&gt;loadTransferable&lt;/span&gt;(type: &lt;span class=&quot;font-lock-builtin&quot;&gt;Data&lt;/span&gt;.&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;) {
-                        currentNamedPhoto = &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;(photo: data, name: &lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;)
-                        isAskNamePresented = &lt;span class=&quot;font-lock-constant&quot;&gt;true&lt;/span&gt;
+    var body: some View {
+        PhotosPicker(&amp;quot;Select a photo&amp;quot;, selection: $pickerItem, matching: .images)
+            .onChange(of: pickerItem) {_, newItem in
+                Task {
+                    if let data = try await newItem?.loadTransferable(type: Data.self) {
+                        currentNamedPhoto = NamedPhoto(photo: data, name: &amp;quot;&amp;quot;)
+                        isAskNamePresented = true
                     }
                 }
             }
-            .&lt;span class=&quot;font-lock-function-call&quot;&gt;sheet&lt;/span&gt;(isPresented: $isAskNamePresented) {
-                &lt;span class=&quot;font-lock-type&quot;&gt;VStack&lt;/span&gt; {
-                    &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; currentNamedPhoto = &lt;span class=&quot;font-lock-function-call&quot;&gt;currentNamedPhoto&lt;/span&gt; {
-                        &lt;span class=&quot;font-lock-function-call&quot;&gt;toImage&lt;/span&gt;(from: currentNamedPhoto.&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;)
-                            .&lt;span class=&quot;font-lock-function-call&quot;&gt;resizable&lt;/span&gt;()
-                            .&lt;span class=&quot;font-lock-function-call&quot;&gt;scaledToFit&lt;/span&gt;()
-                            .&lt;span class=&quot;font-lock-function-call&quot;&gt;frame&lt;/span&gt;(height: 300)
-                        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; namedPhoto = &lt;span class=&quot;font-lock-type&quot;&gt;Binding&lt;/span&gt;($currentNamedPhoto) {
-                            &lt;span class=&quot;font-lock-type&quot;&gt;TextField&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Name&amp;quot;&lt;/span&gt;, text: namedPhoto.&lt;span class=&quot;font-lock-builtin&quot;&gt;name&lt;/span&gt;)
+            .sheet(isPresented: $isAskNamePresented) {
+                VStack {
+                    if let currentNamedPhoto = currentNamedPhoto {
+                        toImage(from: currentNamedPhoto.photo)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 300)
+                        if let namedPhoto = Binding($currentNamedPhoto) {
+                            TextField(&amp;quot;Name&amp;quot;, text: namedPhoto.name)
                         }
-                        &lt;span class=&quot;font-lock-type&quot;&gt;Button&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Add&amp;quot;&lt;/span&gt;) {
-                            namedPhotos.&lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(currentNamedPhoto)
-                            isAskNamePresented = &lt;span class=&quot;font-lock-constant&quot;&gt;false&lt;/span&gt;
+                        Button(&amp;quot;Add&amp;quot;) {
+                            namedPhotos.append(currentNamedPhoto)
+                            isAskNamePresented = false
                         }
-                    } &lt;span class=&quot;font-lock-keyword&quot;&gt;else&lt;/span&gt; {
-                        &lt;span class=&quot;font-lock-type&quot;&gt;Text&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;No photo selected&amp;quot;&lt;/span&gt;)
+                    } else {
+                        Text(&amp;quot;No photo selected&amp;quot;)
                     }
                 }
             }
 
-        &lt;span class=&quot;font-lock-type&quot;&gt;List&lt;/span&gt;(namedPhotos, id: \.&lt;span class=&quot;font-lock-property-use&quot;&gt;id&lt;/span&gt;) { photo &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
-            &lt;span class=&quot;font-lock-type&quot;&gt;VStack&lt;/span&gt;(alignment: .&lt;span class=&quot;font-lock-property-use&quot;&gt;leading&lt;/span&gt;) {
-                &lt;span class=&quot;font-lock-type&quot;&gt;Text&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;hi&amp;quot;&lt;/span&gt;)
-                &lt;span class=&quot;font-lock-function-call&quot;&gt;toImage&lt;/span&gt;(from: photo.&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;)
-                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;resizable&lt;/span&gt;()
-                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;scaledToFit&lt;/span&gt;()
+        List(namedPhotos, id: \.id) { photo in
+            VStack(alignment: .leading) {
+                Text(&amp;quot;hi&amp;quot;)
+                toImage(from: photo.photo)
+                    .resizable()
+                    .scaledToFit()
             }
         }
     }
 
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;toImage&lt;/span&gt;(from data: &lt;span class=&quot;font-lock-builtin&quot;&gt;Data&lt;/span&gt;) -&amp;gt; &lt;span class=&quot;font-lock-type&quot;&gt;Image&lt;/span&gt; {
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; uiImage = &lt;span class=&quot;font-lock-type&quot;&gt;UIImage&lt;/span&gt;(data: data) {
-            &lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;Image&lt;/span&gt;(uiImage: uiImage)
+    func toImage(from data: Data) -&amp;gt; Image {
+        if let uiImage = UIImage(data: data) {
+            return Image(uiImage: uiImage)
         }
-        &lt;span class=&quot;font-lock-builtin&quot;&gt;fatalError&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Couldn't convert data to UIImage&amp;quot;&lt;/span&gt;)
+        fatalError(&amp;quot;Couldn't convert data to UIImage&amp;quot;)
     }
 }&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;To briefly explain the code: the ⁠PhotosPicker allows users to select a photo from their library. Once the photo data is loaded, the sheet is triggered by updating the variable. This is the key functionality.&lt;/p&gt;
@@ -454,40 +454,40 @@ structure of modern CPU.&lt;/p&gt;</content>
 &lt;p&gt;Next, I considered whether the closure might be related to the issue, as the variable captured within the closure has value semantics. This means the value does not change, but I soon realized this assumption was incorrect.&lt;/p&gt;
 &lt;p&gt;After conducting some research, I found an explanation on StackOverflow: &lt;a href=&quot;https://stackoverflow.com/questions/66262213/swiftui-sheet-unexpectedly-found-nil-while-unwrapping-an-optional-value/66267507#66267507&quot;&gt;link&lt;/a&gt;. It states that changes are ignored because the variable is not directly used within the ⁠body property, leading SwiftUI to optimize it out.&lt;/p&gt;
 &lt;p&gt;To resolve this, I updated the code by adding one line:&lt;/p&gt;
-&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; body: &lt;span class=&quot;font-lock-keyword&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
-        &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; currentNamedPhoto = &lt;span class=&quot;font-lock-function-call&quot;&gt;currentNamedPhoto&lt;/span&gt; {}
+&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;var body: some View {
+        if let currentNamedPhoto = currentNamedPhoto {}
 
-        &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPicker&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Select a photo&amp;quot;&lt;/span&gt;, selection: $pickerItem, matching: .&lt;span class=&quot;font-lock-property-use&quot;&gt;images&lt;/span&gt;)
-&lt;span class=&quot;font-lock-comment-delimiter&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;font-lock-comment&quot;&gt; ...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+        PhotosPicker(&amp;quot;Select a photo&amp;quot;, selection: $pickerItem, matching: .images)
+// ...&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Now, everything works as intended!&lt;/p&gt;
 &lt;p&gt;Alternatively, we can use another initializer for the sheet: &lt;a href=&quot;https://developer.apple.com/documentation/swiftui/view/sheet(item:ondismiss:content:)&quot;&gt;link&lt;/a&gt;&lt;/p&gt;
-&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;ContentView&lt;/span&gt;: &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; namedPhotos: [&lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;] = []
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; pickerItem: &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPickerItem&lt;/span&gt;?
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;@State&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; currentNamedPhoto: &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;? = &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt;
+&lt;pre data-lang=&quot;swift&quot;&gt;&lt;code&gt;struct ContentView: View {
+    @State private var namedPhotos: [NamedPhoto] = []
+    @State private var pickerItem: PhotosPickerItem?
+    @State private var currentNamedPhoto: NamedPhoto? = nil
 
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; body: &lt;span class=&quot;font-lock-keyword&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;View&lt;/span&gt; {
-        &lt;span class=&quot;font-lock-type&quot;&gt;PhotosPicker&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Select a photo&amp;quot;&lt;/span&gt;, selection: $pickerItem, matching: .&lt;span class=&quot;font-lock-property-use&quot;&gt;images&lt;/span&gt;)
-            .&lt;span class=&quot;font-lock-function-call&quot;&gt;onChange&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;of&lt;/span&gt;: pickerItem) {_, newItem &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
-                &lt;span class=&quot;font-lock-type&quot;&gt;Task&lt;/span&gt; {
-                    &lt;span class=&quot;font-lock-keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;let&lt;/span&gt; data = &lt;span class=&quot;font-lock-keyword&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;await&lt;/span&gt; newItem?.&lt;span class=&quot;font-lock-function-call&quot;&gt;loadTransferable&lt;/span&gt;(type: &lt;span class=&quot;font-lock-builtin&quot;&gt;Data&lt;/span&gt;.&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;) {
-                        currentNamedPhoto = &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;(photo: data, name: &lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;)
+    var body: some View {
+        PhotosPicker(&amp;quot;Select a photo&amp;quot;, selection: $pickerItem, matching: .images)
+            .onChange(of: pickerItem) {_, newItem in
+                Task {
+                    if let data = try await newItem?.loadTransferable(type: Data.self) {
+                        currentNamedPhoto = NamedPhoto(photo: data, name: &amp;quot;&amp;quot;)
                     }
                 }
             }
-            .&lt;span class=&quot;font-lock-function-call&quot;&gt;sheet&lt;/span&gt;(item: $currentNamedPhoto, onDismiss: { }) { item &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt;
-                &lt;span class=&quot;font-lock-keyword&quot;&gt;var&lt;/span&gt; newItem = &lt;span class=&quot;font-lock-type&quot;&gt;NamedPhoto&lt;/span&gt;(photo: item.&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;, name: &lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;)
-                &lt;span class=&quot;font-lock-function-call&quot;&gt;toImage&lt;/span&gt;(from: newItem.&lt;span class=&quot;font-lock-property-use&quot;&gt;photo&lt;/span&gt;)
-                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;resizable&lt;/span&gt;()
-                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;scaledToFit&lt;/span&gt;()
-                    .&lt;span class=&quot;font-lock-function-call&quot;&gt;frame&lt;/span&gt;(height: 300)
-                &lt;span class=&quot;font-lock-type&quot;&gt;TextField&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Name&amp;quot;&lt;/span&gt;, text: &lt;span class=&quot;font-lock-type&quot;&gt;Binding&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;get&lt;/span&gt;: { newItem.&lt;span class=&quot;font-lock-builtin&quot;&gt;name&lt;/span&gt; }, &lt;span class=&quot;font-lock-keyword&quot;&gt;set&lt;/span&gt;: { newItem.&lt;span class=&quot;font-lock-builtin&quot;&gt;name&lt;/span&gt; = $0 }))
-                &lt;span class=&quot;font-lock-type&quot;&gt;Button&lt;/span&gt;(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Add&amp;quot;&lt;/span&gt;) {
-                    namedPhotos.&lt;span class=&quot;font-lock-builtin&quot;&gt;append&lt;/span&gt;(newItem)
-                    currentNamedPhoto = &lt;span class=&quot;font-lock-constant&quot;&gt;nil&lt;/span&gt;
+            .sheet(item: $currentNamedPhoto, onDismiss: { }) { item in
+                var newItem = NamedPhoto(photo: item.photo, name: &amp;quot;&amp;quot;)
+                toImage(from: newItem.photo)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 300)
+                TextField(&amp;quot;Name&amp;quot;, text: Binding(get: { newItem.name }, set: { newItem.name = $0 }))
+                Button(&amp;quot;Add&amp;quot;) {
+                    namedPhotos.append(newItem)
+                    currentNamedPhoto = nil
                 }
             }
-&lt;span class=&quot;font-lock-comment-delimiter&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;font-lock-comment&quot;&gt; ...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+// ...&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;This approach also works effectively.&lt;/p&gt;</content>
 </entry>
 <entry>
