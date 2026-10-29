@@ -81,7 +81,7 @@ main > h1 {
   padding-left: 2ch;
 }
 .dired .name { white-space: pre; color: var(--fg-dim); flex: none; }
-.dired time, .dired .target { color: var(--fg-dim); flex: none; }
+.dired time { color: var(--fg-dim); flex: none; }
 .dired a { color: var(--fg-main); text-decoration: none; }
 .dired a:hover { text-decoration: underline; }
 
@@ -154,10 +154,6 @@ th, td {
 .font-lock-preprocessor { color: var(--red-cooler); }
 .font-lock-escape { color: var(--magenta); }
 
-@media (max-width: 600px) {
-  .dired .target { display: none; }
-}
-
 /* Paper: black on white, fixed point sizes, no screen-only chrome. */
 
 .print-only { display: none; }
@@ -182,7 +178,7 @@ th, td {
   .font-lock-type, .font-lock-constant, .font-lock-variable-name,
   .font-lock-property-name, .font-lock-property-use, .font-lock-preprocessor,
   .font-lock-escape { color: black; }
-  .post-meta, .dired time, .dired .target, .dired .name, hr::before,
+  .post-meta, .dired time, .dired .name, hr::before,
   article h1::before, article h2::before, article h3::before,
   article h4::before, li::marker, :not(pre) > code::before,
   :not(pre) > code::after, pre::before, pre::after, .font-lock-doc,

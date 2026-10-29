@@ -445,9 +445,6 @@ Return the index of the first line after the list."
                               (async . "") (src . "//gc.zgo.at/count.js")))))))
    "\n"))
 
-(defun blog--remove-scheme (url)
-  (replace-regexp-in-string "\\`[a-z]+://" "" url))
-
 (defun blog--home-section (section posts)
   "The home page reads like dired: each section a subdirectory listing."
   (pcase-let* ((`(,kind ,title . ,entries) section)
@@ -476,9 +473,7 @@ Return the index of the first line after the list."
                                          (span ((class . "value")) ,value)))
                                    (`(:link ,name ,url)
                                     `(li ((class . "line"))
-                                         (a ((href . ,url)) ,name)
-                                         (span ((class . "target"))
-                                               ,(concat "-> " (blog--remove-scheme url)))))))
+                                         (a ((href . ,url)) ,name)))))
                                entries)))))))
 
 (defun blog--home-page (posts)
