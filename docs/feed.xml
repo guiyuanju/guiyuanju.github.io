@@ -543,14 +543,14 @@ Output: [2,1,4,3]&lt;/p&gt;
 <updated>2024-06-20T00:00:00+08:00</updated>
 <content type="html">&lt;p&gt;Consider the following class:&lt;/p&gt;
 &lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;font-lock-type&quot;&gt;LineCollector&lt;/span&gt;:
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;__init__&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;lines&lt;/span&gt;=[]):
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;__init__&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, lines=[]):
         &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.&lt;span class=&quot;font-lock-variable-name&quot;&gt;lines&lt;/span&gt; = lines
 
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;collect&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, &lt;span class=&quot;font-lock-variable-name&quot;&gt;line&lt;/span&gt;):
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;collect&lt;/span&gt;(&lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;, line):
         &lt;span class=&quot;font-lock-keyword&quot;&gt;self&lt;/span&gt;.lines.append(line)
 
-&lt;span class=&quot;font-lock-variable-name&quot;&gt;c1&lt;/span&gt; = &lt;span class=&quot;font-lock-type&quot;&gt;LineCollector&lt;/span&gt;()
-&lt;span class=&quot;font-lock-variable-name&quot;&gt;c2&lt;/span&gt; = &lt;span class=&quot;font-lock-type&quot;&gt;LineCollector&lt;/span&gt;()
+&lt;span class=&quot;font-lock-variable-name&quot;&gt;c1&lt;/span&gt; = LineCollector()
+&lt;span class=&quot;font-lock-variable-name&quot;&gt;c2&lt;/span&gt; = LineCollector()
 
 c1.collect(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Hi mom&amp;quot;&lt;/span&gt;)
 c2.collect(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Are you ok Annie?&amp;quot;&lt;/span&gt;)
@@ -563,28 +563,28 @@ c2.collect(&lt;span class=&quot;font-lock-string&quot;&gt;&amp;quot;Are you ok A
 &lt;ol&gt;&lt;li&gt;Python evaluate the default value only once when it come across the def statement&lt;/li&gt;&lt;li&gt;Every subsequent call uses the same pre-evaluated default object.&lt;/li&gt;&lt;/ol&gt;
 &lt;p&gt;Someone mentioned that this behavior can actually be useful for capturing a variable’s value inside a loop:&lt;/p&gt;
 &lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-variable-name&quot;&gt;fs&lt;/span&gt; = []
-&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; range(10):
+&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;range&lt;/span&gt;(10):
     &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;():
         &lt;span class=&quot;font-lock-builtin&quot;&gt;print&lt;/span&gt;(i)
     fs.append(f)
 
-[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
+[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; f &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;It prints out 10 ‘9’s, with this feature, the following program print 0 to 9 correctly:&lt;/p&gt;
 &lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-variable-name&quot;&gt;fs&lt;/span&gt; = []
-&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; range(10):
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt;=i):
+&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;range&lt;/span&gt;(10):
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;(i=i):
         &lt;span class=&quot;font-lock-builtin&quot;&gt;print&lt;/span&gt;(i)
     fs.append(f)
 
-[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
+[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; f &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Alternatively, we can use a closure like this, though it’s a bit more complex:&lt;/p&gt;
 &lt;pre data-lang=&quot;python&quot;&gt;&lt;code&gt;&lt;span class=&quot;font-lock-variable-name&quot;&gt;fs&lt;/span&gt; = []
-&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; range(10):
-    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;(&lt;span class=&quot;font-lock-variable-name&quot;&gt;i&lt;/span&gt;):
+&lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;font-lock-builtin&quot;&gt;range&lt;/span&gt;(10):
+    &lt;span class=&quot;font-lock-keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;font-lock-function-name&quot;&gt;f&lt;/span&gt;(i):
         &lt;span class=&quot;font-lock-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;lambda&lt;/span&gt;: (&lt;span class=&quot;font-lock-builtin&quot;&gt;print&lt;/span&gt;(i))
     fs.append(f(i))
 
-[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;font-lock-variable-name&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
+[f() &lt;span class=&quot;font-lock-keyword&quot;&gt;for&lt;/span&gt; f &lt;span class=&quot;font-lock-keyword&quot;&gt;in&lt;/span&gt; fs]&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;This problem actually reminds me of the similar for loop variable capture problem in Go, which is fixed in Go 1.22 https://go.dev/blog/loopvar-preview&lt;/p&gt;</content>
 </entry>
 <entry>

@@ -203,14 +203,14 @@ th, td {
 }
 </style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2024-06-20">2024-06-20</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/python-default-parameters.html</span></p><h1>Default Parameters in Python</h1><p>Consider the following class:</p>
 <pre data-lang="python"><code><span class="font-lock-keyword">class</span> <span class="font-lock-type">LineCollector</span>:
-    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">__init__</span>(<span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">lines</span>=[]):
+    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">__init__</span>(<span class="font-lock-keyword">self</span>, lines=[]):
         <span class="font-lock-keyword">self</span>.<span class="font-lock-variable-name">lines</span> = lines
 
-    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">collect</span>(<span class="font-lock-keyword">self</span>, <span class="font-lock-variable-name">line</span>):
+    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">collect</span>(<span class="font-lock-keyword">self</span>, line):
         <span class="font-lock-keyword">self</span>.lines.append(line)
 
-<span class="font-lock-variable-name">c1</span> = <span class="font-lock-type">LineCollector</span>()
-<span class="font-lock-variable-name">c2</span> = <span class="font-lock-type">LineCollector</span>()
+<span class="font-lock-variable-name">c1</span> = LineCollector()
+<span class="font-lock-variable-name">c2</span> = LineCollector()
 
 c1.collect(<span class="font-lock-string">&quot;Hi mom&quot;</span>)
 c2.collect(<span class="font-lock-string">&quot;Are you ok Annie?&quot;</span>)
@@ -223,26 +223,26 @@ c2.collect(<span class="font-lock-string">&quot;Are you ok Annie?&quot;</span>)
 <ol><li>Python evaluate the default value only once when it come across the def statement</li><li>Every subsequent call uses the same pre-evaluated default object.</li></ol>
 <p>Someone mentioned that this behavior can actually be useful for capturing a variable’s value inside a loop:</p>
 <pre data-lang="python"><code><span class="font-lock-variable-name">fs</span> = []
-<span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">i</span> <span class="font-lock-keyword">in</span> range(10):
+<span class="font-lock-keyword">for</span> i <span class="font-lock-keyword">in</span> <span class="font-lock-builtin">range</span>(10):
     <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>():
         <span class="font-lock-builtin">print</span>(i)
     fs.append(f)
 
-[f() <span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">f</span> <span class="font-lock-keyword">in</span> fs]</code></pre>
+[f() <span class="font-lock-keyword">for</span> f <span class="font-lock-keyword">in</span> fs]</code></pre>
 <p>It prints out 10 ‘9’s, with this feature, the following program print 0 to 9 correctly:</p>
 <pre data-lang="python"><code><span class="font-lock-variable-name">fs</span> = []
-<span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">i</span> <span class="font-lock-keyword">in</span> range(10):
-    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>(<span class="font-lock-variable-name">i</span>=i):
+<span class="font-lock-keyword">for</span> i <span class="font-lock-keyword">in</span> <span class="font-lock-builtin">range</span>(10):
+    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>(i=i):
         <span class="font-lock-builtin">print</span>(i)
     fs.append(f)
 
-[f() <span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">f</span> <span class="font-lock-keyword">in</span> fs]</code></pre>
+[f() <span class="font-lock-keyword">for</span> f <span class="font-lock-keyword">in</span> fs]</code></pre>
 <p>Alternatively, we can use a closure like this, though it’s a bit more complex:</p>
 <pre data-lang="python"><code><span class="font-lock-variable-name">fs</span> = []
-<span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">i</span> <span class="font-lock-keyword">in</span> range(10):
-    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>(<span class="font-lock-variable-name">i</span>):
+<span class="font-lock-keyword">for</span> i <span class="font-lock-keyword">in</span> <span class="font-lock-builtin">range</span>(10):
+    <span class="font-lock-keyword">def</span> <span class="font-lock-function-name">f</span>(i):
         <span class="font-lock-keyword">return</span> <span class="font-lock-keyword">lambda</span>: (<span class="font-lock-builtin">print</span>(i))
     fs.append(f(i))
 
-[f() <span class="font-lock-keyword">for</span> <span class="font-lock-variable-name">f</span> <span class="font-lock-keyword">in</span> fs]</code></pre>
+[f() <span class="font-lock-keyword">for</span> f <span class="font-lock-keyword">in</span> fs]</code></pre>
 <p>This problem actually reminds me of the similar for loop variable capture problem in Go, which is fixed in Go 1.22 https://go.dev/blog/loopvar-preview</p></article></main></body></html>
