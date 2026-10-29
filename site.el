@@ -9,10 +9,10 @@
                          (:item "tools" "emacs ai"))
                (:posts "posts")
                (:section "books"
-                         (:item "A Pale View of Hills" "read")
-                         (:item "The Agony of Eros" "read")
-                         (:item "Japan: A Modern History" "read")
-                         (:item "Never Let Me Go" "read"))
+                         (:item "read" "A Pale View of Hills")
+                         (:item "read" "The Agony of Eros")
+                         (:item "read" "Japan: A Modern History")
+                         (:item "read" "Never Let Me Go"))
                (:section "projects"
                          (:link "golisp" "https://github.com/guiyuanju/golisp")
                          (:link "mossdb" "https://github.com/guiyuanju/mossdb")

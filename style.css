@@ -79,8 +79,8 @@ main > h1 {
   gap: 1ch;
   padding-left: 2ch;
 }
-.dired .name { white-space: pre; }
-.dired time, .dired .target, .dired .value { color: var(--fg-dim); flex: none; }
+.dired .name { white-space: pre; color: var(--fg-dim); flex: none; }
+.dired time, .dired .target { color: var(--fg-dim); flex: none; }
 .dired a { color: var(--fg-main); text-decoration: none; }
 .dired a:hover { text-decoration: underline; }
 
@@ -181,7 +181,7 @@ th, td {
   .font-lock-type, .font-lock-constant, .font-lock-variable-name,
   .font-lock-property-name, .font-lock-property-use, .font-lock-preprocessor,
   .font-lock-escape { color: black; }
-  .post-meta, .dired time, .dired .target, .dired .value, hr::before,
+  .post-meta, .dired time, .dired .target, .dired .name, hr::before,
   article h1::before, article h2::before, article h3::before,
   article h4::before, li::marker, :not(pre) > code::before,
   :not(pre) > code::after, pre::before, pre::after, .font-lock-doc,
