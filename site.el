@@ -4,7 +4,6 @@
         :author "guiyuanju"
         :timezone "+08:00"
         :goatcounter nil
-        :back-text "C-x <left>"
         :home ((:section "info"
                          (:link "github" "https://github.com/guiyuanju")
                          (:item "tools" "emacs ai"))

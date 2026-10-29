@@ -87,8 +87,6 @@ main > h1 {
 
 /* Markdown (posts) */
 
-.back { color: var(--fg-dim); }
-
 .post-meta {
   margin: 0;
   color: var(--fg-dim);
@@ -172,7 +170,6 @@ th, td {
     color: black;
     font-size: 12pt;
   }
-  .back { display: none; }
   .print-only { display: inline; }
   article { max-width: none; }
   article h1 { font-size: 16pt; }
@@ -201,7 +198,7 @@ th, td {
   blockquote { border-left-color: #ccc; }
   th, td { border-color: black; }
 }
-</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2026-02-02">2026-02-02</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/generic-vector-in-c.html</span></p><h1>&quot;Generic&quot; Vector in C From Scratch</h1><p><a href="https://github.com/guiyuanju/vector">github repo</a></p>
+</style></head><body><main><article><p class="post-meta"><time datetime="2026-02-02">2026-02-02</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/generic-vector-in-c.html</span></p><h1>&quot;Generic&quot; Vector in C From Scratch</h1><p><a href="https://github.com/guiyuanju/vector">github repo</a></p>
 <p>A vector is a dynamically growable array allocated on heap, the concept is similar to <code>ArrayList</code> in Java or <code>slice</code> in Go (slice is actually a little different).</p>
 <p>C lacks such convenient data structure, but we can build one with an easy to use interface by ourselves.</p>
 <p>First define the Vec structure, a dynamic array should have a <code>len</code> indicating the actual length of data in the underlying storage, <code>cap</code> tells us the length of the storage, and <code>size</code> is quite interesting here, which represents the byte size of a single data element we store in this vector, because C doesn't have generic, and there is no type info during runtime, we need some way to know our type, so that we can retrieve the data from the bytes stored in storage using its byte size, and at last, we have the <code>data</code>, which is the underlying storage to store all our elements, in bytes.</p>

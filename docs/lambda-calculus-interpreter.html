@@ -87,8 +87,6 @@ main > h1 {
 
 /* Markdown (posts) */
 
-.back { color: var(--fg-dim); }
-
 .post-meta {
   margin: 0;
   color: var(--fg-dim);
@@ -172,7 +170,6 @@ th, td {
     color: black;
     font-size: 12pt;
   }
-  .back { display: none; }
   .print-only { display: inline; }
   article { max-width: none; }
   article h1 { font-size: 16pt; }
@@ -201,7 +198,7 @@ th, td {
   blockquote { border-left-color: #ccc; }
   th, td { border-color: black; }
 }
-</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-12-24">2025-12-24</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/lambda-calculus-interpreter.html</span></p><h1>Lambda Calculus Interpreter</h1><p>A Lambda Calculus Interpreter written in Go compiled to WASM, see source on <a href="https://github.com/guiyuanju/lamb">Github</a>.</p>
+</style></head><body><main><article><p class="post-meta"><time datetime="2025-12-24">2025-12-24</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/lambda-calculus-interpreter.html</span></p><h1>Lambda Calculus Interpreter</h1><p>A Lambda Calculus Interpreter written in Go compiled to WASM, see source on <a href="https://github.com/guiyuanju/lamb">Github</a>.</p>
 <h2>Syntax</h2>
 <p>Function/abstraction: <code>(\x.x)</code>, <code>(\x.(\y.y x))</code></p>
 <p>Application: <code>((\x.x y) y)</code> =&gt; <code>(y y)</code>.</p>

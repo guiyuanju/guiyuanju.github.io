@@ -489,8 +489,7 @@ Return the index of the first line after the list."
 
 (defun blog--post-page (post)
   (blog--page (plist-get post :title) (plist-get post :description) (blog--post-url post)
-              `((a ((class . "back") (href . "/")) ,(blog--site :back-text))
-                (article ()
+              `((article ()
                          (p ((class . "post-meta"))
                             (time ((datetime . ,(plist-get post :date)))
                                   ,(plist-get post :date))

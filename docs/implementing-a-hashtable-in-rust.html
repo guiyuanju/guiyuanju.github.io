@@ -87,8 +87,6 @@ main > h1 {
 
 /* Markdown (posts) */
 
-.back { color: var(--fg-dim); }
-
 .post-meta {
   margin: 0;
   color: var(--fg-dim);
@@ -172,7 +170,6 @@ th, td {
     color: black;
     font-size: 12pt;
   }
-  .back { display: none; }
   .print-only { display: inline; }
   article { max-width: none; }
   article h1 { font-size: 16pt; }
@@ -201,7 +198,7 @@ th, td {
   blockquote { border-left-color: #ccc; }
   th, td { border-color: black; }
 }
-</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-08-18">2025-08-18</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/implementing-a-hashtable-in-rust.html</span></p><h1>HashTable in Rust from Scratch</h1><p><a href="https://github.com/guiyuanju/hash_table_in_rust">Link for Code</a></p>
+</style></head><body><main><article><p class="post-meta"><time datetime="2025-08-18">2025-08-18</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/implementing-a-hashtable-in-rust.html</span></p><h1>HashTable in Rust from Scratch</h1><p><a href="https://github.com/guiyuanju/hash_table_in_rust">Link for Code</a></p>
 <p>Recently, I wanted to revisit Rust, and while following along with the book <em>Crafting Interpreters</em>, I came across the chapter on implementing a Hash Table. I discovered many interesting details about Hash Table implementations, which inspired me to write this blog post. I will implement a Hash Table using Rust and conduct some possibly non-standard benchmarks.</p>
 <p>A Hash Table typically consists of two main components:</p>
 <ol><li>A hash function</li><li>A collision resolution strategy, commonly including:

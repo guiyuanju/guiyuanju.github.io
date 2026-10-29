@@ -87,8 +87,6 @@ main > h1 {
 
 /* Markdown (posts) */
 
-.back { color: var(--fg-dim); }
-
 .post-meta {
   margin: 0;
   color: var(--fg-dim);
@@ -172,7 +170,6 @@ th, td {
     color: black;
     font-size: 12pt;
   }
-  .back { display: none; }
   .print-only { display: inline; }
   article { max-width: none; }
   article h1 { font-size: 16pt; }
@@ -201,7 +198,7 @@ th, td {
   blockquote { border-left-color: #ccc; }
   th, td { border-color: black; }
 }
-</style></head><body><main><a class="back" href="/">C-x &lt;left&gt;</a><article><p class="post-meta"><time datetime="2025-03-28">2025-03-28</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/swiftui-changes-to-unused-state-variables-in-the-body-may-be-ignored.html</span></p><h1>SwiftUI Ignores Unused State Variables</h1><p>This issue arose from a project I was working on for the “100 Days of SwiftUI” challenge. The application allows users to select a photo from their library and assign a name to it. While it's a simple app, it presented a puzzling challenge.</p>
+</style></head><body><main><article><p class="post-meta"><time datetime="2025-03-28">2025-03-28</time><span class="print-only"> · guiyuanju · https://guiyuanju.github.io/swiftui-changes-to-unused-state-variables-in-the-body-may-be-ignored.html</span></p><h1>SwiftUI Ignores Unused State Variables</h1><p>This issue arose from a project I was working on for the “100 Days of SwiftUI” challenge. The application allows users to select a photo from their library and assign a name to it. While it's a simple app, it presented a puzzling challenge.</p>
 <p>Below is the initial version of the code I attempted. It failed at an unexpected point—can you identify the issue?</p>
 <pre data-lang="swift"><code><span class="font-lock-keyword">import</span> <span class="font-lock-type">SwiftUI</span>
 <span class="font-lock-keyword">import</span> <span class="font-lock-type">PhotosUI</span>
