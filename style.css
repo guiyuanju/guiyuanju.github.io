@@ -28,7 +28,7 @@
 
 body {
   margin: 0;
-  padding: 0 1ch var(--line);
+  padding: calc(2 * var(--line)) 3ch;
   background: var(--bg-main);
   color: var(--fg-main);
   font-family: "Sarasa Mono SC", "Sarasa Term SC", "SF Mono", Menlo, Consolas,
@@ -56,6 +56,12 @@ hr {
   margin: 0 0 var(--line);
 }
 hr::before { content: "---"; color: var(--fg-dim); }
+
+main { max-width: 88ch; margin: 0 auto; }
+
+@media (max-width: 600px) {
+  body { padding: var(--line) 1ch; }
+}
 
 /* Dired (home) */
 
@@ -90,8 +96,6 @@ main > h1 {
   margin: 0;
   color: var(--fg-dim);
 }
-
-article { max-width: 88ch; }
 
 article h1::before { content: "# "; }
 article h2::before { content: "## "; }
@@ -166,7 +170,7 @@ th, td {
     font-size: 12pt;
   }
   .print-only { display: inline; }
-  article { max-width: none; }
+  main { max-width: none; }
   article h1 { font-size: 16pt; }
   article h2 { font-size: 14pt; }
   article h3, article h4 { font-size: 13pt; }
